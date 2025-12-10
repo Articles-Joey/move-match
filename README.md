@@ -1,6 +1,8 @@
-# Maze
+# Move Match
 
 ...
+
+![Preview](public/img/preview.webp)
 
 ## Getting Started
 
