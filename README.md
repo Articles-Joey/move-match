@@ -1,6 +1,6 @@
 # Move Match
 
-...
+Compete to replay the pattern given to you the fastest with out players!
 
 ![Preview](public/img/preview.webp)
 

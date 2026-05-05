@@ -1,7 +1,7 @@
 import { createContext, createRef, forwardRef, memo, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { Sky, useDetectGPU, useTexture, OrbitControls, Cylinder, QuadraticBezierLine, Text } from "@react-three/drei";
+import { Sky, useDetectGPU, useTexture, OrbitControls, Cylinder, QuadraticBezierLine, Text, Stats } from "@react-three/drei";
 
 import { NearestFilter, RepeatWrapping, TextureLoader, Vector3 } from "three";
 // import GameGrid from "./GameGrid";
@@ -50,6 +50,13 @@ function GameCanvas(props) {
 
     return (
         <Canvas camera={{ position: [-10, 40, 40], fov: 50 }}>
+
+            {process.env.NODE_ENV === 'development' &&
+                <>
+                    {/* <axesHelper args={[5]} /> */}
+                    <Stats className="stats-overlay" />
+                </>
+            }
 
             <OrbitControls
             // autoRotate={gameState?.status == 'In Lobby'}
@@ -148,7 +155,7 @@ function Rocks() {
                 return (
                     <ModelKennyNLGraveyardRocksTall
                         key={i}
-                        scale={generateRandomInteger(50,80)}
+                        scale={generateRandomInteger(50, 80)}
                         position={[0 + (i * 20), 0, -70]}
                     />
                 )

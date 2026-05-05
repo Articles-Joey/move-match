@@ -4,23 +4,15 @@ import { useEffect, useContext, useState, useRef, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic'
-import Script from 'next/script'
-
-// import { useSelector, useDispatch } from 'react-redux'
-
-// import ROUTES from '@/components/constants/routes';
-
-import ArticlesButton from '@/components/UI/Button';
 
 import useFullscreen from '@/hooks/useFullScreen';
-import { useControllerStore } from '@/hooks/useControllerStore';
-// import ControllerPreview from '@/components/Games/ControllerPreview';
-// import { useGameStore } from '@/components/Games/Ocean Rings/hooks/useGameStore';
-// import { Dropdown, DropdownButton } from 'react-bootstrap';
-// import TouchControls from 'app/(site)/community/games/glass-ceiling/components/UI/TouchControls';
-import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
+
 import LeftPanelContent from '@/components/Game/LeftPanel';
 import { useSocketStore } from '@/hooks/useSocketStore';
+
+import GameMenu from '@articles-media/articles-dev-box/GameMenu';
+import { useStore } from '@/hooks/useStore';
+import classNames from 'classnames';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -34,25 +26,21 @@ export default function MoveMatchGamePage() {
         socket: state.socket
     }));
 
-    const router = useRouter()
-    const pathname = usePathname()
+    const sidebar = useStore((state) => state.sidebar)
+    const nickname = useStore((state) => state.nickname)
+    const sceneKey = useStore((state) => state.sceneKey)
+    const menuOpen = useStore((state) => state.menuOpen)
+
     const searchParams = useSearchParams()
     const params = Object.fromEntries(searchParams.entries());
     const { server } = params
-
-    const { controllerState, setControllerState } = useControllerStore()
-    const [showControllerState, setShowControllerState] = useState(false)
-
-    // const [ cameraMode, setCameraMode ] = useState('Player')
-
-    const [players, setPlayers] = useState([])
 
     useEffect(() => {
 
         if (server && socket.connected) {
             socket.emit('join-room', `game:move-match-room-${server}`, {
                 game_id: server,
-                nickname: JSON.parse(localStorage.getItem('game:nickname')),
+                nickname: nickname,
                 client_version: '1',
 
             });
@@ -62,47 +50,35 @@ export default function MoveMatchGamePage() {
             socket.emit('leave-room', `game:move-match-room-${server}`)
         };
 
-    }, [server, socket.connected]);
-
-    const [showMenu, setShowMenu] = useState(false)
-
-    const [touchControlsEnabled, setTouchControlsEnabled] = useLocalStorageNew("game:touchControlsEnabled", false)
-
-    const [sceneKey, setSceneKey] = useState(0);
-
-    const [gameState, setGameState] = useState(false)
-
-    // Function to handle scene reload
-    const reloadScene = () => {
-        setSceneKey((prevKey) => prevKey + 1);
-    };
-
-    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
-
-    let panelProps = {
-        server,
-        players,
-        touchControlsEnabled,
-        setTouchControlsEnabled,
-        reloadScene,
-        // controllerState,
-        isFullscreen,
-        requestFullscreen,
-        exitFullscreen,
-        setShowMenu
-    }
-
-    const game_name = 'Move Match'
-    const game_key = 'move-match'
+    }, [server, socket.connected, nickname]);
 
     return (
 
         <div
-            className={`move-match-game-page ${isFullscreen && 'fullscreen'}`}
-            id="maze-game-page"
+            className={classNames(
+                `${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`,
+                {
+                    'menu-open': menuOpen,
+                    'fullscreen': useFullscreen().isFullscreen,
+                    'show-sidebar': sidebar,
+                }
+            )}
+            id={`${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`}
         >
 
-            <div className="menu-bar card card-articles p-1 justify-content-center">
+            <GameMenu
+                useStore={useStore}
+                LeftPanelContent={LeftPanelContent}
+                menuBarConfig={{
+                    style: "Corner Button",
+                    menuBarButtonPosition: "Left"
+                }}
+                sidebarConfig={{
+                    style: "Static Panel",
+                }}
+            />
+
+            {/* <div className="menu-bar card card-articles p-1 justify-content-center">
 
                 <div className='flex-header align-items-center'>
 
@@ -118,30 +94,30 @@ export default function MoveMatchGamePage() {
                     </ArticlesButton>
 
                     <div>
-                        {/* Y: {(playerLocation?.y || 0)} */}
+
                     </div>
 
                 </div>
 
-            </div>
+            </div> */}
 
-            <div className={`mobile-menu ${showMenu && 'show'}`}>
+            {/* <div className={`mobile-menu ${showMenu && 'show'}`}>
                 <LeftPanelContent
                     {...panelProps}
                 />
-            </div>
+            </div> */}
 
             {/* <TouchControls
                 touchControlsEnabled={touchControlsEnabled}
             /> */}
 
-            <div className='panel-left card rounded-0 d-none d-lg-flex'>
+            {/* <div className='panel-left card rounded-0 d-none d-lg-flex'>
 
                 <LeftPanelContent
                     {...panelProps}
                 />
 
-            </div>
+            </div> */}
 
             {/* <div className='game-info'>
                 <div className="card card-articles card-sm">
@@ -157,10 +133,10 @@ export default function MoveMatchGamePage() {
 
                 <GameCanvas
                     key={sceneKey}
-                    gameState={gameState}
+                    // gameState={gameState}
                     // playerData={playerData}
                     // setPlayerData={setPlayerData}
-                    players={players}
+                    // players={players}
                 />
 
             </div>

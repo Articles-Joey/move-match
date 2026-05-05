@@ -7,20 +7,15 @@ import ArticlesButton from "@/components/UI/Button";
 import ControllerPreview from "@/components/ControllerPreview";
 import { useSocketStore } from "@/hooks/useSocketStore";
 
+import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
+import { useStore } from "@/hooks/useStore";
+import { useSearchParams } from "next/navigation";
+
 export default function LeftPanelContent(props) {
 
-    const {
-        server,
-        // players,
-        touchControlsEnabled,
-        setTouchControlsEnabled,
-        reloadScene,
-        controllerState,
-        isFullscreen,
-        requestFullscreen,
-        exitFullscreen,
-        setShowMenu
-    } = props;
+    const searchParams = useSearchParams()
+    const params = Object.fromEntries(searchParams.entries());
+    const { server } = params
 
     const {
         socket,
@@ -28,10 +23,21 @@ export default function LeftPanelContent(props) {
         socket: state.socket,
     }));
 
+    const reloadScene = useStore((state) => state.reloadScene)
+
     return (
         <div className='w-100'>
 
             <div className="card card-articles card-sm">
+
+                <div className="card-body d-flex flex-wrap">
+
+                    <GameMenuPrimaryButtonGroup
+                        useStore={useStore}
+                        type="GameMenu"
+                    />
+
+                </div>
 
                 <div className="card-body">
 
@@ -62,36 +68,6 @@ export default function LeftPanelContent(props) {
 
                         </div>
                     }
-
-                    <Link
-                        href={'/'}
-                        className=""
-                    >
-                        <ArticlesButton
-                            className='w-50'
-                            small
-                        >
-                            <i className="fad fa-arrow-alt-square-left"></i>
-                            <span>Leave Game</span>
-                        </ArticlesButton>
-                    </Link>
-
-                    <ArticlesButton
-                        small
-                        className="w-50"
-                        active={isFullscreen}
-                        onClick={() => {
-                            if (isFullscreen) {
-                                exitFullscreen()
-                            } else {
-                                requestFullscreen('maze-game-page')
-                            }
-                        }}
-                    >
-                        {isFullscreen && <span>Exit </span>}
-                        {!isFullscreen && <span><i className='fad fa-expand'></i></span>}
-                        <span>Fullscreen</span>
-                    </ArticlesButton>
 
                 </div>
             </div>
@@ -129,7 +105,7 @@ export default function LeftPanelContent(props) {
             </div> */}
 
             {/* Touch Controls */}
-            <div
+            {/* <div
                 className="card card-articles card-sm"
             >
                 <div className="card-body">
@@ -167,7 +143,7 @@ export default function LeftPanelContent(props) {
                     </div>
 
                 </div>
-            </div>
+            </div> */}
 
             {/* Debug Controls */}
             <div
@@ -185,7 +161,7 @@ export default function LeftPanelContent(props) {
                                     onClick={() => {
                                         socket.emit('game:move-match:move', {
                                             game_id: server,
-                                            move: item                        
+                                            move: item
                                         });
                                     }}
                                 >
@@ -201,7 +177,7 @@ export default function LeftPanelContent(props) {
                             <ArticlesButton
                                 size="sm"
                                 className="w-50"
-                                onClick={reloadScene}
+                                onClick={() => reloadScene()}
                             >
                                 <i className="fad fa-redo"></i>
                                 Reload Game
@@ -210,7 +186,7 @@ export default function LeftPanelContent(props) {
                             <ArticlesButton
                                 size="sm"
                                 className="w-50"
-                                onClick={reloadScene}
+                                onClick={() => reloadScene()}
                             >
                                 <i className="fad fa-redo"></i>
                                 Reset Camera
@@ -222,7 +198,7 @@ export default function LeftPanelContent(props) {
                 </div>
             </div>
 
-            {controllerState?.connected &&
+            {/* {controllerState?.connected &&
                 <div className="panel-content-group p-0 text-dark">
 
                     <div className="p-1 border-bottom border-dark">
@@ -256,7 +232,7 @@ export default function LeftPanelContent(props) {
                     </div>}
 
                 </div>
-            }
+            } */}
 
         </div>
     )
