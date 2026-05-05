@@ -14,7 +14,7 @@ export const useStore = create()(
 
     }),
     {
-      name: 'accounts-site-storage',
+      name: `${process.env.NEXT_PUBLIC_GAME_KEY}-site-storage`,
       onRehydrateStorage: (state) => {
         return () => state.setHasHydrated(true)
       },

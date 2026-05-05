@@ -96,6 +96,7 @@ export default function GlobalClientModals() {
                                 ]
                             },
                             'Controls': {
+                                touchControls: true,
                                 // defaultKeyBindings: {
                                 //     // moveUp: "W",
                                 //     // moveDown: "S",

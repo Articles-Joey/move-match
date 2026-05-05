@@ -139,6 +139,16 @@ export default function MoveMatchGameLobbyPage() {
 
                         <div className="card-body">
 
+                            <Link href="/play">
+                                <ArticlesButton
+                                    className={`w-100 mb-3`}
+                                    variant='success'
+                                >
+                                    <i className="fad fa-play"></i>
+                                    Single Player
+                                </ArticlesButton>
+                            </Link>
+
                             <div className="fw-bold mb-1 small text-center">
                                 {lobbyDetails?.players?.length || 0} player{lobbyDetails?.players?.length > 1 && 's'} in the lobby.
                             </div>

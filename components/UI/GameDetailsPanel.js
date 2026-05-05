@@ -1,0 +1,116 @@
+import { useGameStore } from "@/hooks/useGameStore"
+import ArticlesButton from "./Button"
+import { useSearchParams } from "next/navigation"
+import { useSocketStore } from "@/hooks/useSocketStore"
+import { use } from "react"
+// import { useIceSlideStore } from "@/hooks/useIceSlideStore"
+
+export default function GameDetailsPanel() {
+
+    const players = useGameStore(state => state.gameState.players)
+    // const fallingItems = useGameStore(state => state.gameState.fallingItems)
+
+    return (
+        <div className="card game-details-panel">
+
+            <div className="card-body">
+
+                <div className="h6 mb-2 d-flex justify-content-between">
+                    <RoundAndTimer />
+                </div>
+
+                <div>Players</div>
+
+                {players?.length > 0 && players.map((player, index) => (
+                    <div key={index} className="player-entry border p-2">
+
+                        {/* <div className="player-color" style={{ backgroundColor: player.color }}></div> */}
+
+                        <div className="" style={{ fontSize: "0.6rem" }}>ID: {player.id}</div>
+
+                        <div className="player-name d-flex align-items-center">
+                            {/* <span
+                                className={`badge ${player.ready ? 'bg-success' : 'bg-danger'} me-1`}
+                                style={{
+                                    fontSize: "0.6rem"
+                                }}
+                            >
+                                {player.ready ? "Ready" : "Not Ready"}
+                            </span> */}
+                            <span>{player.nickname || "?"} </span>
+                            <span>- {player.score || 0}</span>
+                        </div>
+
+                        {/* <div className="player-name">Ready: {player.ready ? "Yes" : "No"}</div> */}
+
+                        <div className="d-flex justify-content-between">
+
+                            <div>X: {player?.x?.toFixed(2) || 0} | Z: {player?.z?.toFixed(2) || 0}</div>
+
+                        </div>
+
+                    </div>
+                ))}
+
+            </div>
+
+        </div>
+    )
+}
+
+function RoundAndTimer() {
+
+    const timer = useGameStore(state => state.gameState.timer)
+    const round = useGameStore(state => state.gameState.round)
+    const roundTimer = useGameStore(state => state.gameState.roundTimer)
+    const status = useGameStore(state => state.gameState.status)
+    const setGameState = useGameStore(state => state.setGameState)
+
+    const startGame = useSocketStore(state => state.startGame)
+
+    const searchParams = useSearchParams()
+    const params = Object.fromEntries(searchParams.entries());
+    const { server } = params
+
+    return (
+        <div className="w-100">
+
+            <div className="d-flex align-items-center w-100 justify-content-between mb-2">
+                {/* <div>Round: {gameState?.round || 0}</div> */}
+                <div>Time: {timer || 0}</div>
+                <div>Status: {status || "N/A"}</div>
+            </div>
+
+            <div>
+                {status === "In Progress" && (
+                    <div className="d-flex align-items-center w-100 justify-content-between">
+                        <div>Round: {round || 0}</div>
+                        <div>Round Time: {roundTimer || 0}</div>
+                    </div>
+                )}
+            </div>
+
+            <ArticlesButton
+                small
+                className="w-100 mt-1"
+                disabled={status === "In Progress"}
+                onClick={() => {
+
+                    if (server) {
+                        startGame(server, "In Progress")
+                    } else {
+                        // Event handled with SinglePlayerHandler
+                        setGameState({
+                            ...useGameStore.getState().gameState,
+                            status: "In Progress"
+                        })
+                    }
+
+                }}
+            >
+                Start Game
+            </ArticlesButton>
+
+        </div>
+    )
+}

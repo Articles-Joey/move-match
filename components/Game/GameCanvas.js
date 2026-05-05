@@ -34,104 +34,41 @@ import { useMoveMatchStore } from "@/hooks/useMoveMatchStore";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { degToRad } from "three/src/math/MathUtils";
 import { useStore } from "@/hooks/useStore";
-
-const FlatArrow = (props) => {
-
-    return (
-        <group
-            {...props}
-        >
-
-            {/* Shaft */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]}>
-                <planeGeometry attach="geometry" args={[0.4, 1]} />
-                <meshStandardMaterial attach="material" color={props.color} transparent={true} opacity={0.5} />
-            </mesh>
-
-            {/* Head */}
-            {/* <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 2]}>
-                <planeGeometry attach="geometry" args={[1, 0.5]} />
-                <meshStandardMaterial attach="material" color={'purple'} />
-            </mesh> */}
-
-            {/* Left Blockout */}
-            <mesh rotation={[-Math.PI / 2, 0, -Math.PI / 4]} position={[-0.212, 0.1, 0.2]}>
-                <planeGeometry attach="geometry" args={[1, 0.4]} />
-                <meshStandardMaterial attach="material" color={props.color} />
-            </mesh>
-
-            {/* Right Blockout */}
-            <mesh rotation={[-Math.PI / 2, 0, Math.PI / 4]} position={[0.212, 0.1, 0.2]}>
-                <planeGeometry attach="geometry" args={[1, 0.4]} />
-                <meshStandardMaterial attach="material" color={props.color} />
-            </mesh>
-
-            {/* <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.5, 1.5]}>
-
-                <bufferGeometry attach="geometry">
-                    <bufferAttribute
-                        attachObject={["attributes", "position"]}
-                        args={[f32array, 3]}
-                    />
-                </bufferGeometry>
-
-                <meshBasicMaterial
-                    attach="material"
-                    color="#5243aa"
-                    // wireframe={false}
-                    side={DoubleSide}
-                />
-
-            </mesh> */}
-
-        </group>
-    );
-};
+import Player from "./Player";
+import { Socket } from "socket.io-client";
+import SocketPlayers from "./SocketPlayers";
+import { useSocketStore } from "@/hooks/useSocketStore";
+import { useAddMove } from "@/hooks/useAddMove";
+import FlatArrow from "./FlatArrow";
+import MovesNPC from "./MovesNPC";
 
 function GameCanvas(props) {
+
+    const socket = useSocketStore(state => state.socket);
+    const addMove = useAddMove();
 
     const debug = useStore(state => state.debug);
     const showStats = useStore(state => state.showStats);
     const darkMode = useStore(state => state.darkMode);
     const toontownMode = useStore(state => state.toontownMode);
 
-    const {
-        moves,
-        setMoves,
-        addMove
-    } = useMoveMatchStore()
+    const { moves } = useMoveMatchStore()
 
     const { moveBackward, moveForward, moveRight, moveLeft } = useKeyboard()
 
     useEffect(() => {
 
-        if (
-            moveBackward
-            ||
-            moveForward
-            ||
-            moveRight
-            ||
-            moveLeft
-        ) {
-
-            setMoves([
-                ...moves,
-                ...(moveBackward ? ["Down"] : []),
-                ...(moveForward ? ["Up"] : []),
-                ...(moveRight ? ["Right"] : []),
-                ...(moveLeft ? ["Left"] : []),
-            ]);
-
-            console.log("Move detected", moves)
-
+        if (moveBackward || moveForward || moveRight || moveLeft) {
+            addMove(
+                moveForward && 'Up' || moveBackward && 'Down' || moveRight && 'Right' || moveLeft && 'Left'
+            );
         }
 
     }, [moveBackward, moveForward, moveRight, moveLeft])
 
     const lastMove = useMemo(() => {
 
-        return moves[moves.length - 1]
+        return moves[moves.length - 1]?.move
 
     }, [moves])
 
@@ -167,26 +104,29 @@ function GameCanvas(props) {
             {/* Players */}
             <group scale={3} position={[0, 0, 0]}>
 
-                <Duck
-                    position={[8, 0, 0]}
+                <SocketPlayers />
+
+                {/* <Player
+                    position={[8, 0, 2]}
                     rotation={[0, 0, 0]}
                 />
-                <Duck
-                    position={[6, 0, 0]}
+                <Player
+                    position={[6, 0, 1]}
                     rotation={[0, 0, 0]}
                 />
-                <Duck
+                <Player
                     position={[4, 0, 0]}
                     rotation={[0, 0, 0]}
                 />
-                <Duck
-                    position={[2, 0, 0]}
+                <Player
+                    position={[2, 0, -1]}
                     rotation={[0, 0, 0]}
-                />
+                /> */}
 
+                {/* TODO - Move to Player component - Players Control Preview */}
                 <group
                     scale={1}
-                    position={[-12, 2.5, 0]}
+                    position={[-12, 6, -1]}
                     rotation={[Math.PI / 2, 0, 0]}
                 >
 
@@ -270,42 +210,7 @@ function GameCanvas(props) {
                 </group>
 
                 {/* NPC */}
-                <group
-                    rotation={[0, degToRad(45), 0]}
-                    position={[-5, 0, 0]}
-                >
-                    <Duck
-                        position={[0, 0, 0]}
-                        rotation={[0, 0, 0]}
-                    />
-                    <group
-                        position={[-2.5, 2.5, 0]}
-                    >
-                        <FlatArrow
-                            rotation={[Math.PI / 2, Math.PI / 2, 0]}
-                            color="blue"
-                            size={1}
-                        />
-                        <FlatArrow
-                            rotation={[Math.PI / 2, Math.PI / 2, 0]}
-                            position={[1.5, 0, 0]}
-                            color="blue"
-                            size={1}
-                        />
-                        <FlatArrow
-                            rotation={[Math.PI / 2, Math.PI / 2, 0]}
-                            position={[3.0, 0, 0]}
-                            color="blue"
-                            size={1}
-                        />
-                        <FlatArrow
-                            rotation={[Math.PI / 2, Math.PI / 2, 0]}
-                            position={[4.5, 0, 0]}
-                            color="blue"
-                            size={1}
-                        />
-                    </group>
-                </group>
+                <MovesNPC />
 
                 {/* <Duck
                     position={[10, 0, 10]}

@@ -10,6 +10,8 @@ import { useSocketStore } from "@/hooks/useSocketStore";
 import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
 import { useStore } from "@/hooks/useStore";
 import { useSearchParams } from "next/navigation";
+import DebugPanel from "./DebugPanel";
+import GameDetailsPanel from "./GameDetailsPanel";
 
 export default function LeftPanelContent(props) {
 
@@ -24,53 +26,57 @@ export default function LeftPanelContent(props) {
     }));
 
     const reloadScene = useStore((state) => state.reloadScene)
+    const debug = useStore((state) => state.debug)
 
     return (
         <div className='w-100'>
 
-            <div className="card card-articles card-sm">
-
+            <div className="card card-articles card-sm rounded-0">
                 <div className="card-body d-flex flex-wrap">
-
                     <GameMenuPrimaryButtonGroup
                         useStore={useStore}
                         type="GameMenu"
                     />
-
-                </div>
-
-                <div className="card-body">
-
-                    <div className='flex-header'>
-                        <div>Server: {server}</div>
-                        <div>Players: {0}/4</div>
-                    </div>
-
-                    {!socket?.connected &&
-                        <div
-                            className=""
-                        >
-
-                            <div className="">
-
-                                <div className="h6 mb-1">Not connected</div>
-
-                                <ArticlesButton
-                                    onClick={() => {
-                                        console.log("Reconnect")
-                                        socket.connect()
-                                    }}
-                                >
-                                    Reconnect!
-                                </ArticlesButton>
-
-                            </div>
-
-                        </div>
-                    }
-
                 </div>
             </div>
+
+            {server &&
+                <div className="card card-articles card-sm rounded-0">
+                    <div className="card-body">
+
+                        <div className='flex-header'>
+                            <div>Server: {server}</div>
+                            <div>Players: {0}/4</div>
+                        </div>
+
+                        {!socket?.connected &&
+                            <div
+                                className=""
+                            >
+
+                                <div className="">
+
+                                    <div className="h6 mb-1">Not connected</div>
+
+                                    <ArticlesButton
+                                        onClick={() => {
+                                            console.log("Reconnect")
+                                            socket.connect()
+                                        }}
+                                    >
+                                        Reconnect!
+                                    </ArticlesButton>
+
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            }
+
+            <GameDetailsPanel />
 
             {/* <div
                 className="card card-articles card-sm"
@@ -146,57 +152,7 @@ export default function LeftPanelContent(props) {
             </div> */}
 
             {/* Debug Controls */}
-            <div
-                className="card card-articles card-sm"
-            >
-                <div className="card-body">
-
-                    <div className="small text-muted">Debug Controls</div>
-
-                    <div className="border p-3 d-flex justify-content-center">
-                        {['up', 'down', 'left', 'right'].map((item) => {
-                            return (
-                                <ArticlesButton
-                                    key={item}
-                                    onClick={() => {
-                                        socket.emit('game:move-match:move', {
-                                            game_id: server,
-                                            move: item
-                                        });
-                                    }}
-                                >
-                                    <i className={`fad fa-arrow-${item} me-0`}></i>
-                                </ArticlesButton>
-                            )
-                        })}
-                    </div>
-
-                    <div className='d-flex flex-column'>
-
-                        <div>
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={() => reloadScene()}
-                            >
-                                <i className="fad fa-redo"></i>
-                                Reload Game
-                            </ArticlesButton>
-
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={() => reloadScene()}
-                            >
-                                <i className="fad fa-redo"></i>
-                                Reset Camera
-                            </ArticlesButton>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
+            {debug && <DebugPanel />}
 
             {/* {controllerState?.connected &&
                 <div className="panel-content-group p-0 text-dark">

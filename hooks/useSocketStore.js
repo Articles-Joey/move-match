@@ -30,6 +30,15 @@ export const useSocketStore = create((set) => ({
         // Disconnect but do not dump socket store or socket.on and socket.connected will be undefined if not careful
         // return { socket: null };
     }),
+    startGame: (gameId, status) => {
+        set((state) => {
+            state.socket.emit(`game:${process.env.NEXT_PUBLIC_GAME_KEY}:start`, {
+                game_id: gameId,
+                status: status
+            });
+            return {}
+        })
+    },
     totalUsers: 0,
     setTotalUsers: (total) => set({ totalUsers: total }),
     connected: false,
