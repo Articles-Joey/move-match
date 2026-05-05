@@ -47,10 +47,26 @@
         top: 0;
         width: 100%;
         height: 100%;
+        z-index: -1;
 
         img {
             // backdrop-filter: blur(8px);
             filter: blur(2px);
         }
+    }
+
+    .logo-wrap {
+        margin-bottom: 1rem;
+        text-align: center;
+
+        h1, .icon-cycle {
+            font-size: 4.5rem;
+            color: white;
+            -webkit-text-stroke: 2px black;
+        }
+
+         .icon-cycle {
+            transform: scale(1.5);
+         }
     }
 }

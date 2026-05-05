@@ -101,12 +101,22 @@ export default function MoveMatchGameLobbyPage() {
                 />
             </div>
 
-            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center">
+            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center py-3">
 
                 <div
                     className=''
                     style={{ "width": "20rem" }}
                 >
+
+                    <div className='logo-wrap'>
+
+                        <IconCycle />
+
+                        <h1 className='caveat-brush-regular mb-0'>
+                            {process.env.NEXT_PUBLIC_GAME_NAME}
+                        </h1>
+
+                    </div>
 
                     <div className="card card-articles mb-3">
 
@@ -281,6 +291,32 @@ export default function MoveMatchGameLobbyPage() {
                 />
 
             </div>
+        </div>
+    );
+}
+
+function IconCycle() {
+    const [currentIcon, setCurrentIcon] = useState(0)
+
+    const icons = [
+        <i className="fas fa-hand-point-up"></i>,
+        <i className="fas fa-hand-point-right"></i>,
+        <i className="fas fa-hand-point-down"></i>,
+        <i className="fas fa-hand-point-left"></i>,
+        <i className="fas fa-hand-peace"></i>,
+        <i className="fas fa-hand-middle-finger"></i>,
+    ]
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIcon(prev => (prev + 1) % icons.length)
+        }, 250)
+        return () => clearInterval(interval);
+    }, [icons.length]);
+
+    return (
+        <div className='icon-cycle'>
+            {icons[currentIcon]}
         </div>
     );
 }

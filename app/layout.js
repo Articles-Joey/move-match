@@ -40,32 +40,31 @@ export default function RootLayout({ children }) {
 
       <head>
 
-        {/* <link
-          rel="stylesheet"
-          href={`${process.env.NEXT_PUBLIC_CDN}fonts/fontawsome/css/all.min.css`}
-        /> */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+            <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet" />
 
-      </head>
+            </head>
 
-      <body
-      // className={`${geistSans.variable} ${geistMono.variable}`}
-      >
+            <body
+            // className={`${geistSans.variable} ${geistMono.variable}`}
+            >
 
-        <SocketLogicHandler />
-        <LayoutClient />
+              <SocketLogicHandler />
+              <LayoutClient />
 
-        <Suspense>
-          <GlobalClientModals />
-        </Suspense>
+              <Suspense>
+                <GlobalClientModals />
+              </Suspense>
 
-        <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-          <ThemeProvider theme={theme}>
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-            <CssBaseline />
-            {children}
-          </ThemeProvider>
-        </AppRouterCacheProvider>
-      </body>
-    </html>
-  );
+              <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+                <ThemeProvider theme={theme}>
+                  {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                  <CssBaseline />
+                  {children}
+                </ThemeProvider>
+              </AppRouterCacheProvider>
+            </body>
+          </html>
+          );
 }
