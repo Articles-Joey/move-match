@@ -1,5 +1,3 @@
-
-
 const patternAdjectives = [
     'Clever', 'Logical', 'Swift', 'Sharp', 'Crafty', 'Witty', 'Brilliant', 'Curious',
     'Insightful', 'Creative', 'Bold', 'Dynamic', 'Intuitive', 'Strategic', 'Inventive',

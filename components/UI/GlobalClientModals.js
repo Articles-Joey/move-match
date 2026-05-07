@@ -48,7 +48,7 @@ export default function GlobalClientModals() {
         isLoading: userTokenLoading,
         mutate: userTokenMutate
     } = useUserToken(
-        "3030"
+        process.env.NEXT_PUBLIC_GAME_PORT
     );
 
     const {

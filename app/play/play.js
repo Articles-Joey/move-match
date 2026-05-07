@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import dynamic from 'next/dynamic'
 
-import useFullscreen from '@/hooks/useFullScreen';
+import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 
 import LeftPanelContent from '@/components/UI/LeftPanel';
 import { useSocketStore } from '@/hooks/useSocketStore';
@@ -36,7 +36,7 @@ export default function MoveMatchGamePage() {
     const sidebar = useStore((state) => state.sidebar)
     const nickname = useStore((state) => state.nickname)
     const sceneKey = useStore((state) => state.sceneKey)
-    const menuOpen = useStore((state) => state.menuOpen)
+    const showMenu = useStore((state) => state.showMenu)
 
     useEffect(() => {
 
@@ -61,7 +61,7 @@ export default function MoveMatchGamePage() {
             className={classNames(
                 `${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`,
                 {
-                    'menu-open': menuOpen,
+                    'menu-open': showMenu,
                     'fullscreen': useFullscreen().isFullscreen,
                     'show-sidebar': sidebar,
                 }
