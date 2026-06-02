@@ -5,44 +5,28 @@ import { NearestFilter, RepeatWrapping, TextureLoader } from "three";
 import Tree from "@/components/Models/Tree";
 import Duck from "@/components/Models/Duck";
 
-const texture = new TextureLoader().load(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/grass.jpg`)
-
-const GrassPlane = () => {
-
-    const width = 110; // Set the width of the plane
-    const height = 110; // Set the height of the plane
-
-    texture.magFilter = NearestFilter;
-    texture.wrapS = RepeatWrapping
-    texture.wrapT = RepeatWrapping
-    texture.repeat.set(5, 5)
-
-    return (
-        <>
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]}>
-                <circleGeometry attach="geometry" args={[width, height]} />
-                <meshStandardMaterial attach="material" map={texture} />
-            </mesh>
-        </>
-    );
-};
-
 import Sand from './Sand';
-import { Farm } from "@/components/Models/Farm";
-import { memo, useEffect, useMemo } from "react";
+// import { Farm } from "@/components/Models/Farm";
+import { memo, Suspense, useEffect, useMemo } from "react";
 import { useMoveMatchStore } from "@/hooks/useMoveMatchStore";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { degToRad } from "three/src/math/MathUtils";
 import { useStore } from "@/hooks/useStore";
-import Player from "./Player";
-import { Socket } from "socket.io-client";
+// import Player from "./Player";
+// import { Socket } from "socket.io-client";
 import SocketPlayers from "./SocketPlayers";
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useAddMove } from "@/hooks/useAddMove";
 import FlatArrow from "./FlatArrow";
 import MovesNPC from "./MovesNPC";
+import ImageRing from "./ImageRing";
+import FenceRing from "./FenceRing";
+import Grass from "./Grass";
+import GrassBlades from "./GrassBlades";
 
-function GameCanvas(props) {
+function GameCanvas({
+    landingAnimationMode
+}) {
 
     const socket = useSocketStore(state => state.socket);
     const addMove = useAddMove();
@@ -57,6 +41,8 @@ function GameCanvas(props) {
     const { moveBackward, moveForward, moveRight, moveLeft } = useKeyboard()
 
     useEffect(() => {
+
+        if (landingAnimationMode) return;
 
         if (moveBackward || moveForward || moveRight || moveLeft) {
             addMove(
@@ -101,10 +87,15 @@ function GameCanvas(props) {
                 </>
             }
 
+            <ImageRing />
+            <FenceRing />
+
             {/* Players */}
             <group scale={3} position={[0, 0, 0]}>
 
-                <SocketPlayers />
+                <Suspense>
+                    <SocketPlayers />
+                </Suspense>
 
                 {/* <Player
                     position={[8, 0, 2]}
@@ -223,7 +214,7 @@ function GameCanvas(props) {
                 /> */}
             </group>
 
-            <group>
+            {/* <group>
                 <Farm
                     scale={0.1}
                     position={[-60, 0, 105]}
@@ -262,9 +253,9 @@ function GameCanvas(props) {
                     position={[-30, 0, -115]}
                     rotation={[0, -Math.PI, 0]}
                 />
-            </group>
+            </group> */}
 
-            {[...Array(60)].map((item, i) => {
+            {/* {[...Array(60)].map((item, i) => {
                 return (
                     <>
                         <Tree
@@ -286,9 +277,10 @@ function GameCanvas(props) {
                         />
                     </>
                 )
-            })}
+            })} */}
 
-            <GrassPlane />
+            <Grass />
+            <GrassBlades />
 
             <Sand
                 args={[200, 200]}

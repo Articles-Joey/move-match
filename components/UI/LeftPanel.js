@@ -4,12 +4,12 @@ import Link from "next/link";
 // import { useGameStore } from "../hooks/useGameStore";
 import ArticlesButton from "@/components/UI/Button";
 
-import ControllerPreview from "@/components/ControllerPreview";
+// import ControllerPreview from "@/components/ControllerPreview";
 import { useSocketStore } from "@/hooks/useSocketStore";
 
 import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
 import { useStore } from "@/hooks/useStore";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import DebugPanel from "./DebugPanel";
 import GameDetailsPanel from "./GameDetailsPanel";
 
@@ -36,6 +36,7 @@ export default function LeftPanelContent(props) {
                     <GameMenuPrimaryButtonGroup
                         useStore={useStore}
                         type="GameMenu"
+                        useRouter={useRouter}
                     />
                 </div>
             </div>

@@ -23,7 +23,7 @@ export function useAddMove() {
             ...moves,
             {
                 move: direction,
-                player_id: socket?.id || 'local'
+                player_id: server ? socket?.id : 'local'
             }
         ]);
 
@@ -33,7 +33,18 @@ export function useAddMove() {
 
             setGameState(prev => ({
                 ...gameState,
-                players: gameState.players.map(p => p.id === (socket?.id || 'local') ? { ...p, lastMove: direction, moveIndex: nextMoveIndex } : p)
+                players: gameState.players.map(
+                    p => p.id === (server ? socket?.id : 'local')
+                        ?
+                        {
+                            ...p,
+                            lastMove:
+                                direction,
+                            moveIndex: nextMoveIndex
+                        }
+                        :
+                        p
+                )
             }))
         }
 

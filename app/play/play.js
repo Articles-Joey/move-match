@@ -38,22 +38,22 @@ export default function MoveMatchGamePage() {
     const sceneKey = useStore((state) => state.sceneKey)
     const showMenu = useStore((state) => state.showMenu)
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (server && socket.connected) {
-            socket.emit('join-room', `game:move-match-room-${server}`, {
-                game_id: server,
-                nickname: nickname,
-                client_version: '1',
+    //     if (server && socket.connected) {
+    //         socket.emit('join-room', `game:move-match-room-${server}`, {
+    //             game_id: server,
+    //             nickname: nickname,
+    //             client_version: '1',
 
-            });
-        }
+    //         });
+    //     }
 
-        return function cleanup() {
-            socket.emit('leave-room', `game:move-match-room-${server}`)
-        };
+    //     return function cleanup() {
+    //         socket.emit('leave-room', `game:move-match-room-${server}`)
+    //     };
 
-    }, [server, socket.connected, nickname]);
+    // }, [server, socket.connected, nickname]);
 
     return (
 

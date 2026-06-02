@@ -5,6 +5,7 @@ import { useStore } from "@/hooks/useStore";
 
 import Duck from "../Models/Duck";
 import { ModelMinnieMouse } from "../Models/MinnieMouse";
+import { ModelMan } from "../Models/Man";
 
 export default function MovesNPC({ }) {
 
@@ -22,9 +23,16 @@ export default function MovesNPC({ }) {
                     rotation={[0, 0, 0]}
                 />
                 :
-                <Duck
-                    position={[0, 0, 0]}
+                // <Duck
+                //     position={[0, 0, 0]}
+                //     rotation={[0, 0, 0]}
+                // />
+                <ModelMan
+                    position={[2, 0, -1]}
                     rotation={[0, 0, 0]}
+                    scale={1}
+                    // action={lastMoveToAnimationMap[player?.lastMove] || "HumanArmature|Man_Idle"}
+                    // moveIndex={player?.moveIndex ?? derivedMoveIndex}
                 />
             }
 

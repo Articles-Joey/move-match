@@ -38,9 +38,12 @@ export default function DebugPanel() {
                     .reverse()
                     .map((item, index) => {
                         return (
-                            <div key={index} className="d-flex align-items-center gap-2">
+                            <div key={item.move + index} className="d-flex align-items-center gap-2">
+
                                 <div className="badge bg-secondary">{item.move}</div>
+
                                 <div className="text-muted">{item.player_id}</div>
+                                
                             </div>
                         )
                     })}

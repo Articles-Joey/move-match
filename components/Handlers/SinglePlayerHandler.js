@@ -58,13 +58,13 @@ export default function SinglePlayerHandler() {
     const setGameState = useGameStore(state => state.setGameState)
 
     if (server) {
-        console.warn("123")
+        console.warn("[SinglePlayerHandler] Is multiplayer mode")
         return null;
     }
 
     useEffect(() => {
 
-        console.warn("SinglePlayerHandler - Player length check")
+        console.warn("[SinglePlayerHandler] Player length check")
 
         if ((gameState?.players?.length || 0) === 0) {
 

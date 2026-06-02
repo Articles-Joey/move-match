@@ -14,9 +14,9 @@ import "@articles-media/articles-dev-box/dist/style.css";
 
 import "@articles-media/articles-gamepad-helper/dist/articles-gamepad-helper.css";
 
-import SocketLogicHandler from "@/components/SocketLogicHandler";
+import SocketLogicHandler from "@/components/Handlers/SocketLogicHandler";
 import LayoutClient from './layout-client';
-import GlobalClientModals from '@/components/UI/GlobalClientModals';
+// import GlobalClientModals from '@/components/UI/GlobalClientModals';
 import { Suspense } from 'react';
 
 // const geistSans = Geist({
@@ -30,41 +30,39 @@ import { Suspense } from 'react';
 // });
 
 export const metadata = {
-  title: "Move Match",
-  description: "",
+    title: "Move Match",
+    description: "",
 };
 
 export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
+    return (
+        <html lang="en">
 
-      <head>
+            <head>
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-            <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet" />
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet" />
 
             </head>
 
             <body
             // className={`${geistSans.variable} ${geistMono.variable}`}
             >
+                <LayoutClient />
 
-              <SocketLogicHandler />
-              <LayoutClient />
+                <Suspense>
+                    <SocketLogicHandler />
+                </Suspense>
 
-              <Suspense>
-                <GlobalClientModals />
-              </Suspense>
-
-              <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-                <ThemeProvider theme={theme}>
-                  {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-                  <CssBaseline />
-                  {children}
-                </ThemeProvider>
-              </AppRouterCacheProvider>
+                <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+                    <ThemeProvider theme={theme}>
+                        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+                        <CssBaseline />
+                        {children}
+                    </ThemeProvider>
+                </AppRouterCacheProvider>
             </body>
-          </html>
-          );
+        </html>
+    );
 }
