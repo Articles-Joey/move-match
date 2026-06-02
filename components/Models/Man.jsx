@@ -2,7 +2,7 @@
 Command: npx gltfjsx@6.5.3 Man.glb -T
 Files: Man.glb [493.2KB] > F:\My Documents\Sites games\move-match\public\models\Man-transformed.glb [157.71KB] (68%) */
 
-import React, { useMemo } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { LoopOnce, LoopRepeat } from 'three'
@@ -12,31 +12,71 @@ const IDLE_ACTION = 'HumanArmature|Man_Idle'
 const MAX_ACTION_DURATION_MS = 500
 const ACTION_FADE_DURATION = 0.1
 
-export const ModelMan = React.memo(function ModelMan({ action, moveIndex = 0, scale, ...props }) {
-  const group = React.useRef()
-  const timeoutRef = React.useRef(null)
-  const activeActionRef = React.useRef(null)
-  const activeActionNameRef = React.useRef(null)
-  const lastQueuedMoveIndexRef = React.useRef(0)
+const MOVES = ['Up', 'Down', 'Left', 'Right']
+const BASE_SCALE = 1.25
+const LAST_MOVE_TO_ANIMATION_MAP = {
+  'Up': "HumanArmature|Man_Jump",
+  'Down': "HumanArmature|Man_Sitting",
+  'Left': "HumanArmature|Man_Punch",
+  'Right': "HumanArmature|Man_Punch",
+}
+
+// Array of natural, realistic skin tones
+const SKIN_TONES = [
+  '#f9d4b6', '#e0b088', '#b87d55', '#915332', '#69381e', '#3d1a08', '#ffdbac', '#f1c27d', '#e0ac69', '#c68642'
+]
+
+// Inside your component:
+const randomSkinColorMaterial = () => {
+  const randomIndex = Math.floor(Math.random() * SKIN_TONES.length)
+  return SKIN_TONES[randomIndex]
+}
+const randomColorMaterial = () => '#' + Math.floor(Math.random() * 16777215).toString(16)
+// const randomHairColorMaterial = () => '#' + Math.floor(Math.random() * 16777215).toString(16)
+// const randomShirtColorMaterial = () => '#' + Math.floor(Math.random() * 16777215).toString(16)
+// const randomShortsColorMaterial = () => '#' + Math.floor(Math.random() * 16777215).toString(16)
+
+export { 
+  randomSkinColorMaterial, 
+  // randomHairColorMaterial, 
+  // randomShirtColorMaterial, 
+  // randomShortsColorMaterial,
+  randomColorMaterial,
+  SKIN_TONES
+}
+
+export const ModelMan = memo(function ModelMan({ 
+  action, 
+  moveIndex = 0, 
+  scale, 
+  forceCharacterSettings, 
+  fakeMovements = false,
+  ...props 
+}) {
+  const group = useRef()
+  const timeoutRef = useRef(null)
+  const activeActionRef = useRef(null)
+  const activeActionNameRef = useRef(null)
+  const lastQueuedMoveIndexRef = useRef(0)
 
   const { scene, animations } = useGLTF('models/Man-transformed.glb')
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
+  const clone = useMemo(() => SkeletonUtils.clone(scene), [scene])
   const { nodes, materials } = useGraph(clone)
   const { actions } = useAnimations(animations, group)
 
-  const [pendingActions, setPendingActions] = React.useState([])
-  const [currentAction, setCurrentAction] = React.useState(null)
-  const [renderScale, setRenderScale] = React.useState(scale)
+  const [pendingActions, setPendingActions] = useState([])
+  const [currentAction, setCurrentAction] = useState(null)
+  const [renderScale, setRenderScale] = useState(scale)
 
-  const actionKeys = React.useMemo(() => Object.keys(actions || {}), [actions])
+  const actionKeys = useMemo(() => Object.keys(actions || {}), [actions])
 
-  const clearScheduledTransition = React.useCallback(() => {
+  const clearScheduledTransition = useCallback(() => {
     if (timeoutRef.current == null) return
     window.clearTimeout(timeoutRef.current)
     timeoutRef.current = null
   }, [])
 
-  const resolveActionName = React.useCallback(requestedAction => {
+  const resolveActionName = useCallback(requestedAction => {
     if (!requestedAction) return null
     if (actions[requestedAction]) return requestedAction
     const normalizedRequestedAction = requestedAction.toLowerCase()
@@ -47,7 +87,7 @@ export const ModelMan = React.memo(function ModelMan({ action, moveIndex = 0, sc
     )
   }, [actionKeys, actions])
 
-  const playAction = React.useCallback((requestedAction, { loopOnce = false } = {}) => {
+  const playAction = useCallback((requestedAction, { loopOnce = false } = {}) => {
     const actionName = resolveActionName(requestedAction)
     if (!actionName) return null
     const targetAction = actions[actionName]
@@ -73,21 +113,40 @@ export const ModelMan = React.memo(function ModelMan({ action, moveIndex = 0, sc
     return targetAction
   }, [actions, clearScheduledTransition, resolveActionName])
 
-  const idleActionName = React.useMemo(() => resolveActionName(IDLE_ACTION), [resolveActionName])
+  const idleActionName = useMemo(() => resolveActionName(IDLE_ACTION), [resolveActionName])
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (!fakeMovements) return
+
+    const interval = setInterval(() => {
+      const randomMove = MOVES[Math.floor(Math.random() * MOVES.length)]
+      const moveAction = LAST_MOVE_TO_ANIMATION_MAP[randomMove] || IDLE_ACTION
+      const s = randomMove === 'Right' ? -BASE_SCALE : BASE_SCALE
+      const moveScale = [s, BASE_SCALE, BASE_SCALE]
+
+      setPendingActions(queue => [...queue, { 
+        action: moveAction, 
+        moveIndex: Date.now() + Math.random(), // Ensure uniqueness
+        scale: moveScale 
+      }])
+    }, 750)
+
+    return () => clearInterval(interval)
+  }, [fakeMovements])
+
+  useEffect(() => {
     if (!action || action === IDLE_ACTION || moveIndex <= 0) return
     if (lastQueuedMoveIndexRef.current === moveIndex) return
     lastQueuedMoveIndexRef.current = moveIndex
     setPendingActions(queue => [...queue, { action, moveIndex, scale }])
   }, [action, moveIndex, scale])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentAction || pendingActions.length > 0) return
     setRenderScale(scale)
   }, [currentAction, pendingActions.length, scale])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!actionKeys.length || currentAction) return
     if (pendingActions.length > 0) {
       setCurrentAction(pendingActions[0])
@@ -99,7 +158,7 @@ export const ModelMan = React.memo(function ModelMan({ action, moveIndex = 0, sc
     }
   }, [actionKeys.length, currentAction, idleActionName, pendingActions, playAction])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!currentAction || !actionKeys.length) return
     setRenderScale(currentAction.scale)
     const targetAction = playAction(currentAction.action, { loopOnce: true })
@@ -118,7 +177,7 @@ export const ModelMan = React.memo(function ModelMan({ action, moveIndex = 0, sc
     }
   }, [actionKeys.length, clearScheduledTransition, currentAction, playAction])
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       clearScheduledTransition()
       Object.values(actions || {}).forEach(animationAction => {
@@ -127,51 +186,52 @@ export const ModelMan = React.memo(function ModelMan({ action, moveIndex = 0, sc
     }
   }, [actions, clearScheduledTransition])
 
-  // Array of natural, realistic skin tones
-  const SKIN_TONES = [
-    '#f9d4b6', '#e0b088', '#b87d55', '#915332', '#69381e', '#3d1a08', '#ffdbac', '#f1c27d', '#e0ac69', '#c68642'
-  ]
+  // let characterCustomization = useStore((state) => state.characterCustomization)
 
-  // Inside your component:
-  const randomSkinColorMaterial = useMemo(() => {
-    const randomIndex = Math.floor(Math.random() * SKIN_TONES.length)
-    return SKIN_TONES[randomIndex]
-  }, [])
-  const randomHairColorMaterial = useMemo(() => '#' + Math.floor(Math.random() * 16777215).toString(16), [])
-  const randomShirtColorMaterial = useMemo(() => '#' + Math.floor(Math.random() * 16777215).toString(16), [])
-  const randomShortsColorMaterial = useMemo(() => '#' + Math.floor(Math.random() * 16777215).toString(16), [])
+  const characterSettings = useMemo(() => {
+    return {
+      skin: forceCharacterSettings?.skin || randomSkinColorMaterial(),
+      hair: forceCharacterSettings?.hair || randomColorMaterial(),
+      shirt: forceCharacterSettings?.shirt || randomColorMaterial(),
+      shorts: forceCharacterSettings?.shorts || randomColorMaterial(),
+      shoes: forceCharacterSettings?.shoes || "#000000",
+    }
+  }, [forceCharacterSettings])
 
   return (
     <group ref={group} {...props} dispose={null} scale={renderScale}>
-      <group name="Root_Scene">
+      <group name="Root_Scene" position={[0, 0, 0]}>
         <primitive object={nodes.Bone} />
         <group name="BaseHuman" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
 
+          {/* Shirt */}
           <skinnedMesh name="BaseHuman_1" geometry={nodes.BaseHuman_1.geometry} skeleton={nodes.BaseHuman_1.skeleton}>
-            <meshStandardMaterial color={randomShirtColorMaterial} roughness={0.6} />
+            <meshStandardMaterial color={characterSettings.shirt} roughness={0.6} />
           </skinnedMesh>
 
           {/* Skin */}
           <skinnedMesh name="BaseHuman_222" geometry={nodes.BaseHuman_2.geometry} skeleton={nodes.BaseHuman_2.skeleton}>
-            <meshStandardMaterial color={randomSkinColorMaterial} roughness={0.6} />
+            <meshStandardMaterial color={characterSettings.skin} roughness={0.6} />
           </skinnedMesh>
 
           {/* Shorts */}
           <skinnedMesh name="BaseHuman_3" geometry={nodes.BaseHuman_3.geometry} skeleton={nodes.BaseHuman_3.skeleton}>
-            <meshStandardMaterial color={randomShortsColorMaterial} roughness={0.8} />
+            <meshStandardMaterial color={characterSettings.shorts} roughness={0.8} />
           </skinnedMesh>
 
           {/* Eyes / Shoes */}
-          <skinnedMesh name="BaseHuman_4" geometry={nodes.BaseHuman_4.geometry} material={materials.PaletteMaterial001} skeleton={nodes.BaseHuman_4.skeleton} />
+          <skinnedMesh name="BaseHuman_4" geometry={nodes.BaseHuman_4.geometry} skeleton={nodes.BaseHuman_4.skeleton}>
+            <meshStandardMaterial color={characterSettings.shoes} roughness={0.8} />
+          </skinnedMesh>
 
           {/* Socks */}
           <skinnedMesh name="BaseHuman_5" geometry={nodes.BaseHuman_5.geometry} skeleton={nodes.BaseHuman_5.skeleton}>
-            <meshStandardMaterial color={randomShortsColorMaterial} roughness={0.8} />
+            <meshStandardMaterial color={characterSettings.socks} roughness={0.8} />
           </skinnedMesh>
 
           {/* Hair */}
           <skinnedMesh name="BaseHuman_6" geometry={nodes.BaseHuman_6.geometry} skeleton={nodes.BaseHuman_6.skeleton}>
-            <meshStandardMaterial color={randomHairColorMaterial} roughness={0.8} />
+            <meshStandardMaterial color={characterSettings.hair} roughness={0.8} />
           </skinnedMesh>
 
         </group>

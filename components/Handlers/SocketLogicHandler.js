@@ -31,15 +31,15 @@ export default function SocketLogicHandler(props) {
             }}
             landingConfig={{
                 handleLandingDetails: true,
-                // onLandingDetails: (data) => {
-                //     console.log("[SocketLogicHandler] onLandingDetails", data)
-                // }
+                onLandingDetails: (data) => {
+                    console.log("[SocketLogicHandler] onLandingDetails", data)
+                }
             }}
             gameConfig={{
-                // handleGameUpdates: true,
-                // onGameUpdate: (data) => {
-                //     console.log("[SocketLogicHandler] onGameUpdate", data)
-                // }
+                handleGameUpdates: true,
+                onGameUpdate: (data) => {
+                    console.log("[SocketLogicHandler] onGameUpdate", data)
+                }
             }}
             server={server}
         />

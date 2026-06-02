@@ -9,10 +9,12 @@ import useTouchControlsStore from "@/hooks/useTouchControlsStore";
 import { useSocketStore } from "@/hooks/useSocketStore";
 import packageInfo from '@/package.json';
 import { useHotkeys } from "react-hotkeys-hook";
+import CharacterCustomizationModal from "@/components/UI/CharacterCustomizationModal";
 
 export default function LayoutClient({ children }) {
 
     const darkMode = useStore((state) => state.darkMode);
+    const characterCustomizationModal = useStore((state) => state.characterCustomizationModal)
 
     useHotkeys('r', () => {
         console.log("Reloading Scene")
@@ -80,6 +82,9 @@ export default function LayoutClient({ children }) {
                     appendContent: <></>
                 }}
             />
+            {characterCustomizationModal &&
+                <CharacterCustomizationModal />
+            }
         </>
     );
 }

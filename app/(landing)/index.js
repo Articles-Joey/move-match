@@ -13,6 +13,7 @@ import IconCycle from './IconCycle';
 
 import PageTemplateLandingPage from '@articles-media/articles-dev-box/PageTemplateLandingPage';
 import RotatingMascot from '@/components/UI/RotatingMascot';
+import ArticlesButton from '@/components/UI/Button';
 
 const backgroundImage = `${process.env.NEXT_PUBLIC_CDN}games/Move Match/background.jpg`;
 
@@ -76,7 +77,17 @@ export default function MoveMatchGameLobbyPage() {
 
                 }}
                 NicknameInputConfig={{
-                    // PreComponent: <div className='flex-shrink-0 me-2'></div>
+                    PreComponent: <div className='d-flex flex-column align-items-center justify-content-center me-2'>
+                        <i className="fas fa-user fa-lg me-0 fa-3x"></i>
+                        <ArticlesButton
+                            small
+                            onClick={() => {                            
+                                useStore.getState().setCharacterCustomizationModal(true)
+                            }}
+                        >
+                            Edit
+                        </ArticlesButton>
+                    </div>
                 }}
                 multiplayerConfig={{
                     type: "WebSocket",

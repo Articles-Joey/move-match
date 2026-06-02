@@ -64,6 +64,15 @@ export default function SinglePlayerHandler() {
 
     useEffect(() => {
 
+        if (!server) {
+            // TODO
+            // setGameState(initialGameState);
+        }
+
+    }, [])
+
+    useEffect(() => {
+
         console.warn("[SinglePlayerHandler] Player length check")
 
         if ((gameState?.players?.length || 0) === 0) {

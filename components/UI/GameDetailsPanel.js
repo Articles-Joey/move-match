@@ -3,6 +3,7 @@ import ArticlesButton from "./Button"
 import { useSearchParams } from "next/navigation"
 import { useSocketStore } from "@/hooks/useSocketStore"
 import { use } from "react"
+import useGameHelpers from "@/hooks/useGameHelpers"
 // import { useIceSlideStore } from "@/hooks/useIceSlideStore"
 
 export default function GameDetailsPanel() {
@@ -49,6 +50,10 @@ export default function GameDetailsPanel() {
 
                         </div>
 
+                        <div>
+
+                        </div>
+
                     </div>
                 ))}
 
@@ -66,7 +71,7 @@ function RoundAndTimer() {
     const status = useGameStore(state => state.gameState.status)
     const setGameState = useGameStore(state => state.setGameState)
 
-    const startGame = useSocketStore(state => state.startGame)
+    const { startGame } = useGameHelpers();
 
     const searchParams = useSearchParams()
     const params = Object.fromEntries(searchParams.entries());
@@ -96,15 +101,7 @@ function RoundAndTimer() {
                 disabled={status === "In Progress"}
                 onClick={() => {
 
-                    if (server) {
-                        startGame(server, "In Progress")
-                    } else {
-                        // Event handled with SinglePlayerHandler
-                        setGameState({
-                            ...useGameStore.getState().gameState,
-                            status: "In Progress"
-                        })
-                    }
+                    startGame()
 
                 }}
             >

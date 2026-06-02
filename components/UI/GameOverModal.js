@@ -6,28 +6,42 @@ import IsDev from "@/components/UI/IsDev";
 import ArticlesButton from "./Button";
 import Link from "next/link";
 import { useGameStore } from "@/hooks/useGameStore";
+import useGameHelpers from "@/hooks/useGameHelpers";
+import { useRouter } from "next/navigation";
 
 export default function GameOverModal({
     // show,
     // setShow,
 }) {
 
+    const router = useRouter();
+
+    const gameState = useGameStore(state => state.gameState);
     const status = useGameStore(state => state.gameState.status);
 
-    useEffect(() => {
-        if (status === 'Game Over') {
-            setShowModal(true)
-        }
-    }, [status])
+    function setShowModal() {
+        // console.log("setShowModal called")
+        // router.push("/")
+    }
 
-    const [showModal, setShowModal] = useState(false)
+    // useEffect(() => {
+    //     if (status === 'Game Over') {
+    //         setShowModal(true)
+    //     }
+    // }, [status])
+
+    // const [showModal, setShowModal] = useState(false)
+
+    const {
+        startGame
+    } = useGameHelpers();
 
     return (
         <>
             <Modal
                 className="articles-modal games-over-modal"
                 size='md'
-                show={showModal}
+                show={status === "Game Over"}
                 centered
                 scrollable
                 onExited={() => {
@@ -38,7 +52,7 @@ export default function GameOverModal({
                 }}
             >
 
-                <Modal.Header closeButton>
+                <Modal.Header closeButton={false}>
                     <Modal.Title>Game Over</Modal.Title>
                 </Modal.Header>
 
@@ -46,7 +60,7 @@ export default function GameOverModal({
 
                     <div className="p-3">
 
-                        <div className="mb-3">The winner was <b>{showModal?.winner?.nickname || "Unknown"}</b>!</div>
+                        <div className="mb-3">The winner was <b>{gameState?.winner?.nickname || "Unknown"}</b>!</div>
 
                         {/* <div className="mb-2">Here is how everyone else did:</div>
 
@@ -70,9 +84,12 @@ export default function GameOverModal({
                         </ArticlesButton>
                     </Link>
 
-                    <ArticlesButton variant="outline-dark" onClick={() => {
-                        setShowModal(false)
-                    }}>
+                    <ArticlesButton
+                        variant="outline-dark"
+                        onClick={() => {
+                            startGame("In Lobby")
+                        }}
+                    >
                         Play Again
                     </ArticlesButton>
 

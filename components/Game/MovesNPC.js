@@ -14,7 +14,8 @@ export default function MovesNPC({ }) {
     return (
         <group
             rotation={[0, degToRad(45), 0]}
-            position={[-5, 0, 0]}
+            position={[-20, 0, 5]}
+            scale={3}
         >
 
             {toontownMode ?
@@ -39,12 +40,12 @@ export default function MovesNPC({ }) {
 
             <group
                 position={[
-                    -2.5,
+                    0,
                     toontownMode ?
                         5
                         :
-                        2.5,
-                    0
+                        6,
+                    -1
                 ]}
             >
                 <FlatArrow

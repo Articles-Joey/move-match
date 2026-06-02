@@ -1,7 +1,7 @@
 {
   "name": "move-match",
   "description": "Compete to replay the pattern given to you the fastest with out players!",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": false,
   "homepage": "https://move-match.articles.media",
   "scripts": {
@@ -28,6 +28,7 @@
     "nipplejs": "^0.10.2",
     "react": "^19",
     "react-bootstrap": "^2.10.10",
+    "react-color": "^2.19.3",
     "react-countdown": "^2.3.6",
     "react-dom": "^19",
     "react-hotkeys-hook": "^5.1.0",

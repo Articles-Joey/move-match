@@ -11,6 +11,8 @@ export default function DebugPanel() {
     const params = Object.fromEntries(searchParams.entries());
     const { server } = params
 
+    const gameState = useGameStore(state => state.gameState)
+
     const socket = useSocketStore(state => state.socket)
 
     const reloadScene = useStore((state) => state.reloadScene)
@@ -25,7 +27,20 @@ export default function DebugPanel() {
         >
             <div className="card-body">
 
-                <div className="small text-muted">Debug Controls</div>
+                <div className="small text-muted mb-2">Debug Controls</div>
+
+                <div className="border p-3 mb-3">
+                    <div className="small">Current Pattern</div>
+                    {gameState.movesSequences && gameState.movesSequences[gameState.round] ? (
+                        <div className="d-flex align-items-center gap-2">
+                            {gameState.movesSequences[gameState.round].map((move, index) => (
+                                <div key={index} className="badge bg-secondary">{move}</div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-muted">No pattern yet</div>
+                    )}
+                </div>
 
                 <div
                     className="border p-3"
@@ -34,6 +49,7 @@ export default function DebugPanel() {
                         overflowY: 'auto'
                     }}
                 >
+                    {moves.length === 0 && <div className="text-muted">No moves yet</div>}
                     {[...moves]
                     .reverse()
                     .map((item, index) => {

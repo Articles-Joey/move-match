@@ -1,19 +1,12 @@
 import { Canvas } from "@react-three/fiber"
-import { Sky, useDetectGPU, useTexture, OrbitControls, Stats } from "@react-three/drei";
+import { Sky, OrbitControls, Stats } from "@react-three/drei";
 
-import { NearestFilter, RepeatWrapping, TextureLoader } from "three";
-import Tree from "@/components/Models/Tree";
-import Duck from "@/components/Models/Duck";
-
-import Sand from './Sand';
-// import { Farm } from "@/components/Models/Farm";
 import { memo, Suspense, useEffect, useMemo } from "react";
 import { useMoveMatchStore } from "@/hooks/useMoveMatchStore";
 import { useKeyboard } from "@/hooks/useKeyboard";
 import { degToRad } from "three/src/math/MathUtils";
 import { useStore } from "@/hooks/useStore";
-// import Player from "./Player";
-// import { Socket } from "socket.io-client";
+
 import SocketPlayers from "./SocketPlayers";
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useAddMove } from "@/hooks/useAddMove";
@@ -23,6 +16,7 @@ import ImageRing from "./ImageRing";
 import FenceRing from "./FenceRing";
 import Grass from "./Grass";
 import GrassBlades from "./GrassBlades";
+import { ModelMan } from "../Models/Man";
 
 function GameCanvas({
     landingAnimationMode
@@ -32,7 +26,7 @@ function GameCanvas({
     const addMove = useAddMove();
 
     const debug = useStore(state => state.debug);
-    const showStats = useStore(state => state.showStats);
+    const showStats = useStore((state) => state?.debugConfig?.showStats);
     const darkMode = useStore(state => state.darkMode);
     const toontownMode = useStore(state => state.toontownMode);
 
@@ -90,94 +84,97 @@ function GameCanvas({
             <ImageRing />
             <FenceRing />
 
+            {landingAnimationMode &&
+                <group scale={2.5}>
+                    <ModelMan
+                        position={[-2, 0, -3]}
+                        rotation={[0, 0, 0]}
+                        fakeMovements={true}
+                    />
+                    <ModelMan
+                        position={[2, 0, -3]}
+                        rotation={[0, 0, 0]}
+                        fakeMovements={true}
+                    />
+                    <ModelMan
+                        position={[6, 0, -3]}
+                        rotation={[0, 0, 0]}
+                        fakeMovements={true}
+                    />
+                </group>}
+
             {/* Players */}
-            <group scale={3} position={[0, 0, 0]}>
+            {!landingAnimationMode &&
+                <group scale={3} position={[0, 0, 0]}>
 
-                <Suspense>
-                    <SocketPlayers />
-                </Suspense>
+                    <Suspense>
+                        <SocketPlayers />
+                    </Suspense>
 
-                {/* <Player
-                    position={[8, 0, 2]}
-                    rotation={[0, 0, 0]}
-                />
-                <Player
-                    position={[6, 0, 1]}
-                    rotation={[0, 0, 0]}
-                />
-                <Player
-                    position={[4, 0, 0]}
-                    rotation={[0, 0, 0]}
-                />
-                <Player
-                    position={[2, 0, -1]}
-                    rotation={[0, 0, 0]}
-                /> */}
+                    {/* TODO - Move to Player component - Players Control Preview */}
+                    <group
+                        scale={1}
+                        position={[-12, 6, -1]}
+                        rotation={[Math.PI / 2, 0, 0]}
+                    >
 
-                {/* TODO - Move to Player component - Players Control Preview */}
-                <group
-                    scale={1}
-                    position={[-12, 6, -1]}
-                    rotation={[Math.PI / 2, 0, 0]}
-                >
+                        {lastMove == 'Up' &&
+                            <group
+                                position={[14, 0, 0]}
+                            >
+                                <FlatArrow
+                                    // rotation={[0, 0, 0]}
+                                    rotation={[0, degToRad(180), 0]}
+                                    // rotation={[0, 0, 0]}
+                                    color="black"
+                                    size={1}
+                                />
+                            </group>
+                        }
 
-                    {lastMove == 'Up' &&
-                        <group
-                            position={[14, 0, 0]}
-                        >
-                            <FlatArrow
-                                // rotation={[0, 0, 0]}
-                                rotation={[0, degToRad(180), 0]}
-                                // rotation={[0, 0, 0]}
-                                color="black"
-                                size={1}
-                            />
-                        </group>
-                    }
+                        {lastMove == 'Down' &&
+                            <group
+                                position={[14, 0, 0]}
+                            >
+                                <FlatArrow
+                                    // rotation={[0, 0, 0]}
+                                    rotation={[0, degToRad(0), 0]}
+                                    // rotation={[0, 0, 0]}
+                                    color="black"
+                                    size={1}
+                                />
+                            </group>
+                        }
 
-                    {lastMove == 'Down' &&
-                        <group
-                            position={[14, 0, 0]}
-                        >
-                            <FlatArrow
-                                // rotation={[0, 0, 0]}
-                                rotation={[0, degToRad(0), 0]}
-                                // rotation={[0, 0, 0]}
-                                color="black"
-                                size={1}
-                            />
-                        </group>
-                    }
+                        {lastMove == 'Right' &&
+                            <group
+                                position={[14, 0, 0]}
+                            >
+                                <FlatArrow
+                                    // rotation={[0, 0, 0]}
+                                    rotation={[0, degToRad(90), 0]}
+                                    // rotation={[0, 0, 0]}
+                                    color="black"
+                                    size={1}
+                                />
+                            </group>
+                        }
 
-                    {lastMove == 'Right' &&
-                        <group
-                            position={[14, 0, 0]}
-                        >
-                            <FlatArrow
-                                // rotation={[0, 0, 0]}
-                                rotation={[0, degToRad(90), 0]}
-                                // rotation={[0, 0, 0]}
-                                color="black"
-                                size={1}
-                            />
-                        </group>
-                    }
+                        {lastMove == 'Left' &&
+                            <group
+                                position={[14, 0, 0]}
+                            >
+                                <FlatArrow
+                                    // rotation={[0, 0, 0]}
+                                    rotation={[0, degToRad(-90), 0]}
+                                    // rotation={[0, 0, 0]}
+                                    color="black"
+                                    size={1}
+                                />
+                            </group>
+                        }
 
-                    {lastMove == 'Left' &&
-                        <group
-                            position={[14, 0, 0]}
-                        >
-                            <FlatArrow
-                                // rotation={[0, 0, 0]}
-                                rotation={[0, degToRad(-90), 0]}
-                                // rotation={[0, 0, 0]}
-                                color="black"
-                                size={1}
-                            />
-                        </group>
-                    }
-
-                    {/* <FlatArrow
+                        {/* <FlatArrow
                         rotation={[0, Math.PI / 2, 0]}
                         position={[14.25, 0, 0]}
                         color="black"
@@ -198,95 +195,22 @@ function GameCanvas({
                         size={1}
                     /> */}
 
+                    </group>
+
                 </group>
+            }
 
-                {/* NPC */}
-                <MovesNPC />
-
-                {/* <Duck
-                    position={[10, 0, 10]}
-                    rotation={[0, -Math.PI, 0]}
-                /> */}
-
-                {/* <Duck
-                    position={[-10, 0, 10]}
-                    rotation={[0, -Math.PI, 0]}
-                /> */}
-            </group>
-
-            {/* <group>
-                <Farm
-                    scale={0.1}
-                    position={[-60, 0, 105]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[-30, 0, 115]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[0, 0, 120]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[30, 0, 115]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[60, 0, 105]}
-                />
-            </group>
-
-            <group>
-                <Farm
-                    scale={0.1}
-                    position={[0, 0, -120]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[30, 0, -115]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[-30, 0, -115]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-            </group> */}
-
-            {/* {[...Array(60)].map((item, i) => {
-                return (
-                    <>
-                        <Tree
-                            key={i}
-                            scale={0.2}
-                            position={[-90, 0, (-84 + i * 3)]}
-                        />
-                    </>
-                )
-            })}
-
-            {[...Array(60)].map((item, i) => {
-                return (
-                    <>
-                        <Tree
-                            key={i}
-                            scale={0.2}
-                            position={[90, 0, (-84 + i * 3)]}
-                        />
-                    </>
-                )
-            })} */}
+            {/* Moves Leader NPC */}
+            <MovesNPC />
 
             <Grass />
             <GrassBlades />
 
-            <Sand
+            {/* <Sand
                 args={[200, 200]}
                 rotation={[-Math.PI / 2, 0, 0]}
                 position={[0, 0, 0]}
-            />
+            /> */}
 
             {/* <pointLight position={[-10, -10, -10]} /> */}
 

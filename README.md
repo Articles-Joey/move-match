@@ -27,3 +27,5 @@ In the scripts folder is reset_public and sync_to_s3. This is only for Articles 
 Recreation of the Move Match mini game from Disney's ToonTown Online.
 
 ## Attributions
+
+[Site Icon - Freepik](https://www.flaticon.com/free-icon/holidays-party_12054912)
