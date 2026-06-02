@@ -24,10 +24,21 @@ const vertexShader = /* glsl */`
 
 const fragmentShader = /* glsl */`
     varying vec2 vUv;
+    uniform float uDarkMode; // 0.0 = Light, 1.0 = Dark
 
     void main() {
-        vec3 baseColor = vec3(0.08, 0.35, 0.08);
-        vec3 tipColor  = vec3(0.38, 0.68, 0.18);
+        // Light mode colors (healthy green)
+        vec3 lightBase = vec3(0.08, 0.35, 0.08);
+        vec3 lightTip  = vec3(0.38, 0.68, 0.18);
+        
+        // Dark mode colors (deep blue/indigo night tones)
+        vec3 darkBase  = vec3(0.02, 0.08, 0.20);
+        vec3 darkTip   = vec3(0.12, 0.32, 0.45);
+
+        // Mix light/dark sets based on uDarkMode value
+        vec3 baseColor = mix(lightBase, darkBase, uDarkMode);
+        vec3 tipColor  = mix(lightTip, darkTip, uDarkMode);
+
         vec3 color = mix(baseColor, tipColor, vUv.y);
         gl_FragColor = vec4(color, 1.0);
     }
@@ -38,7 +49,6 @@ function createBladeGeometry() {
     const w = 0.05;
     const h = 0.8;
 
-    // 5 verts: base-left, base-right, mid-left, mid-right, tip
     const positions = new Float32Array([
         -w,         0,       0,
          w,         0,       0,
@@ -67,6 +77,13 @@ function createBladeGeometry() {
 export default function GrassBlades({ inner = 0, outer = 80, count = 100000 }) {
 
     const graphicsQuality = useStore(state => state.graphicsQuality);    
+    const darkMode = useStore(state => state.darkMode);
+
+    // Keep track of the target dark mode value for interpolation
+    const darkModeTargetRef = useRef(0);
+    useEffect(() => {
+        darkModeTargetRef.current = darkMode ? 1.0 : 0.0;
+    }, [darkMode]);
 
     const bladeCount = useMemo(() => {
         if (graphicsQuality === 'Low')    return Math.floor(count * 0.15);
@@ -79,7 +96,10 @@ export default function GrassBlades({ inner = 0, outer = 80, count = 100000 }) {
     const material = useMemo(() => new ShaderMaterial({
         vertexShader,
         fragmentShader,
-        uniforms: { time: { value: 0 } },
+        uniforms: { 
+            time: { value: 0 },
+            uDarkMode: { value: 0 } // Add uniform here
+        },
         side: DoubleSide,
     }), []);
 
@@ -90,7 +110,6 @@ export default function GrassBlades({ inner = 0, outer = 80, count = 100000 }) {
         if (!mesh) return;
         const dummy = new Object3D();
         for (let i = 0; i < bladeCount; i++) {
-            // Random position in the square annulus (outside inner, inside outer)
             let x, z;
             do {
                 x = (Math.random() * 2 - 1) * outer;
@@ -107,14 +126,17 @@ export default function GrassBlades({ inner = 0, outer = 80, count = 100000 }) {
     }, [bladeCount, inner, outer]);
 
     useFrame(({ clock }) => {
-
-        if (graphicsQuality === 'Low') return
+        if (graphicsQuality === 'Low') return;
 
         material.uniforms.time.value = clock.getElapsedTime();
 
+        // Linearly interpolate (lerp) uniform toward target for a smooth fade
+        const currentVal = material.uniforms.uDarkMode.value;
+        const targetVal = darkModeTargetRef.current;
+        material.uniforms.uDarkMode.value += (targetVal - currentVal) * 0.1; 
     });
 
-    if (graphicsQuality === 'Low') return
+    if (graphicsQuality === 'Low') return null;
 
     return (
         <instancedMesh ref={meshRef} args={[geometry, material, bladeCount]} frustumCulled />

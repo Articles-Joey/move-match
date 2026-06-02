@@ -6,6 +6,11 @@ function actionByKey(key) {
 		KeyS: 'moveBackward',
 		KeyA: 'moveLeft',
 		KeyD: 'moveRight',
+		
+		ArrowLeft: 'moveLeft',
+		ArrowUp: 'moveForward',
+		ArrowRight: 'moveRight',
+		ArrowDown: 'moveBackward',
 	}
 	return keyActionMap[key]
 }

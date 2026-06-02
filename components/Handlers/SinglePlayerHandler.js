@@ -33,13 +33,13 @@ function generateMoveSequence(gameState, setGameState) {
             }
         }
 
-        setGameState(prev => ({
-            ...prev,
+        setGameState({
+            ...gameState,
             movesSequences: sequences,
             round: 0,
             totalRounds: totalRounds,
             roundTimer: 10
-        }));
+        });
     }
 
 }
@@ -56,20 +56,12 @@ export default function SinglePlayerHandler() {
 
     const gameState = useGameStore(state => state.gameState)
     const setGameState = useGameStore(state => state.setGameState)
+    // const initialGameState = useGameStore(state => state.initialGameState)
 
     if (server) {
         console.warn("[SinglePlayerHandler] Is multiplayer mode")
         return null;
     }
-
-    useEffect(() => {
-
-        if (!server) {
-            // TODO
-            // setGameState(initialGameState);
-        }
-
-    }, [])
 
     useEffect(() => {
 
@@ -97,41 +89,98 @@ export default function SinglePlayerHandler() {
             generateMoveSequence(gameState, setGameState);
 
             const interval = setInterval(() => {
-                setGameState((prev) => {
 
-                    const currentRoundTimer = prev.roundTimer ?? 10;
+                const prev = useGameStore.getState().gameState;
+                const currentRoundTimer = prev.roundTimer ?? 10;
 
-                    if (currentRoundTimer <= 1) {
-                        const nextRound = (prev.round ?? 0) + 1;
+                let newGameState = prev
 
-                        if (nextRound > 4) {
-                            return {
-                                ...prev,
-                                status: 'Game Over',
-                                roundTimer: 0
-                            };
-                        }
+                if (currentRoundTimer <= 1) {
 
-                        return {
-                            ...prev,
-                            timer: (prev.timer ?? 0) + 1,
-                            roundTimer: 10,
-                            round: nextRound,
-                        };
-                    }
+                    newGameState = {
+                        ...prev,
+                        timer: (prev.timer ?? 0) + 1,
+                        roundTimer: 10,
+                        round: (prev.round ?? 0) + 1,
+                        players: prev.players.map(p => ({
+                            ...p,
+                            moves: [],
+                            moveIndex: 0,
+                            lastMove: null
+                        }))
+                    };
 
-                    return {
+                } else {
+                    newGameState = {
                         ...prev,
                         timer: (prev.timer ?? 0) + 1,
                         roundTimer: currentRoundTimer - 1,
-                    };
+                    }
+                }
 
-                });
+                if ((newGameState.round ?? 0) >= 5) {
+                    newGameState = {
+                        ...newGameState,
+                        status: 'Game Over',
+                        roundTimer: 0
+                    };
+                    // return
+                }
+
+                // return {
+                //     ...prev,
+                //     timer: (prev.timer ?? 0) + 1,
+                //     roundTimer: currentRoundTimer - 1,
+                // };
+
+                setGameState(newGameState)
+
             }, 1000);
 
             return () => clearInterval(interval);
         }
 
     }, [gameState?.status])
+
+    const playerMoves = gameState?.players?.map(p => p.moves || []) || [];
+
+    useEffect(() => {
+
+        const gameState = useGameStore.getState().gameState;
+
+        console.log("playerMoves changed", playerMoves)
+
+        let allPlayersDone = false;
+
+        if (gameState?.status === "In Progress") {
+
+            const players = gameState.players || [];
+
+            // const round = gameState.round || 0;
+            // const requiredMoves = gameState.movesSequences?.[round] || [];
+
+            allPlayersDone = players.every(p => (p.moves?.length || 0) >= gameState?.movesSequences?.[gameState?.round]?.length);
+
+            if (allPlayersDone) {
+                console.log("allPlayersDone")
+
+                setGameState({
+                    ...gameState,
+                    allPlayersDone: true,
+                    roundTimer: 10,
+                    nextRoundTimer: 2,
+                    round: (gameState.round || 0) + 1,
+                    players: players.map(p => ({
+                        ...p,
+                        moves: [],
+                        moveIndex: 0,
+                        lastMove: null,
+                    }))
+                })
+            }
+
+        }
+
+    }, [playerMoves])
 
 }

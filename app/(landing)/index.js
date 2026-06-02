@@ -14,6 +14,7 @@ import IconCycle from './IconCycle';
 import PageTemplateLandingPage from '@articles-media/articles-dev-box/PageTemplateLandingPage';
 import RotatingMascot from '@/components/UI/RotatingMascot';
 import ArticlesButton from '@/components/UI/Button';
+import { useGameStore } from '@/hooks/useGameStore';
 
 const backgroundImage = `${process.env.NEXT_PUBLIC_CDN}games/Move Match/background.jpg`;
 
@@ -32,12 +33,27 @@ const LandingBackgroundAnimation = dynamic(() =>
 
 export default function MoveMatchGameLobbyPage() {
 
+    const characterImagePreview = useStore((state) => state.characterImagePreview)
+    const darkMode = useStore((state) => state.darkMode)
+
+    const setGameState = useGameStore(state => state.setGameState)
+
+    useEffect(() => {
+        setGameState({
+            status: 'In Lobby',
+        })
+    }, [])
+
     return (
         <>
             <PageTemplateLandingPage
                 useSocketStore={useSocketStore}
                 useStore={useStore}
-                RotatingMascot={RotatingMascot}
+                RotatingMascot={
+                    <RotatingMascot
+                        forceCharacterSettings={true}
+                    />
+                }
                 Link={Link}
                 // logoImage={logo.src}
                 LandingBackgroundAnimation={
@@ -78,10 +94,24 @@ export default function MoveMatchGameLobbyPage() {
                 }}
                 NicknameInputConfig={{
                     PreComponent: <div className='d-flex flex-column align-items-center justify-content-center me-2'>
-                        <i className="fas fa-user fa-lg me-0 fa-3x"></i>
+
+                        {characterImagePreview ?
+                            <img
+                                src={characterImagePreview}
+                                alt="Character Preview"
+                                style={{
+                                    width: '30px',
+                                    height: '50px',
+                                    objectFit: 'cover',
+                                }}
+                            />
+                            :
+                            <i className="fas fa-user fa-lg me-0 fa-3x"></i>
+                        }
+
                         <ArticlesButton
                             small
-                            onClick={() => {                            
+                            onClick={() => {
                                 useStore.getState().setCharacterCustomizationModal(true)
                             }}
                         >

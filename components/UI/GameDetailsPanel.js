@@ -89,7 +89,7 @@ function RoundAndTimer() {
             <div>
                 {status === "In Progress" && (
                     <div className="d-flex align-items-center w-100 justify-content-between">
-                        <div>Round: {round || 0}</div>
+                        <div>Round: {round + 1 || 0}</div>
                         <div>Round Time: {roundTimer || 0}</div>
                     </div>
                 )}

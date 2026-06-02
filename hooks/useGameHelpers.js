@@ -28,6 +28,7 @@ export default function useGameHelpers() {
                 status: status,
                 timer: 0,
                 round: 0,
+                roundTimer: 0,
             })
         }
 

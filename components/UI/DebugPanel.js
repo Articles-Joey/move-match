@@ -4,6 +4,7 @@ import { useSocketStore } from "@/hooks/useSocketStore";
 import { useSearchParams } from "next/navigation";
 import { useMoveMatchStore } from "@/hooks/useMoveMatchStore";
 import { useGameStore } from "@/hooks/useGameStore";
+import { useMemo } from "react";
 
 export default function DebugPanel() {
 
@@ -17,9 +18,15 @@ export default function DebugPanel() {
 
     const reloadScene = useStore((state) => state.reloadScene)
 
-    const {
-        moves
-    } = useMoveMatchStore()
+    // const {
+    //     moves
+    // } = useMoveMatchStore()
+
+    const moves = useMemo(() => {
+
+        return gameState?.players?.find(p => p.id === (server ? socket?.id : 'local'))?.moves || [];
+
+    }, [gameState])
 
     return (
         <div
@@ -30,7 +37,9 @@ export default function DebugPanel() {
                 <div className="small text-muted mb-2">Debug Controls</div>
 
                 <div className="border p-3 mb-3">
+
                     <div className="small">Current Pattern</div>
+
                     {gameState.movesSequences && gameState.movesSequences[gameState.round] ? (
                         <div className="d-flex align-items-center gap-2">
                             {gameState.movesSequences[gameState.round].map((move, index) => (
@@ -40,6 +49,7 @@ export default function DebugPanel() {
                     ) : (
                         <div className="text-muted">No pattern yet</div>
                     )}
+
                 </div>
 
                 <div

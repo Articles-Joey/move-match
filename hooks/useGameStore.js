@@ -5,7 +5,7 @@ export const useGameStore = create((set) => ({
     gameState: {},
     setGameState: (updater) => {
         set((prev) => ({
-            gameState: typeof updater === 'function' ? updater(prev.gameState) : updater
+            gameState: updater
         }))
     },
 

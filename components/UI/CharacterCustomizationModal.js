@@ -54,7 +54,7 @@ export default function CharacterCustomizationModal({
 
                         <div className="w-50 border">
                             <RotatingMascot
-                                forceCharacterSettings={characterCustomization}
+                                forceCharacterSettings={true}
                             />
                         </div>
 

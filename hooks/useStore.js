@@ -34,6 +34,9 @@ export const useStore = create()(
         }
       }),
 
+      characterImagePreview: null,
+      setCharacterImagePreview: (value) => set({ characterImagePreview: value }),
+
     }),
     {
       name: `${process.env.NEXT_PUBLIC_GAME_KEY}-site-storage`,
