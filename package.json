@@ -1,7 +1,7 @@
 {
   "name": "move-match",
   "description": "Compete to replay the pattern given to you the fastest with out players!",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": false,
   "homepage": "https://move-match.articles.media",
   "scripts": {

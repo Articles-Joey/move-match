@@ -53,9 +53,9 @@ function GameCanvas({
     }, [moves])
 
     return (
-        <Canvas camera={{ position: [0, 20, 50], fov: 50 }}>
+        <Canvas camera={{ position: [0, 15, 50], fov: 50 }}>
 
-            {showStats && <>
+            {showStats && !landingAnimationMode && <>
                 <Stats className="stats-overlay" />
             </>}
 
@@ -85,7 +85,10 @@ function GameCanvas({
             <FenceRing />
 
             {landingAnimationMode &&
-                <group scale={2.5}>
+                <group 
+                scale={2.5}
+                position={[0, 0, 20]}
+                >
                     <ModelMan
                         position={[-2, 0, -3]}
                         rotation={[0, 0, 0]}

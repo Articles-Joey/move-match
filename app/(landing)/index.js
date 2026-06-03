@@ -16,16 +16,15 @@ import RotatingMascot from '@/components/UI/RotatingMascot';
 import ArticlesButton from '@/components/UI/Button';
 import { useGameStore } from '@/hooks/useGameStore';
 
-const backgroundImage = `${process.env.NEXT_PUBLIC_CDN}games/Move Match/background.jpg`;
-
+const backgroundImage = `img/preview.webp`;
 const LandingBackgroundAnimation = dynamic(() =>
     import('@/components/Game/LandingBackgroundAnimation'),
     {
         ssr: false,
-        loading: () => <Image
-            src={backgroundImage}
+        loading: () => <img
+            src={backgroundImage.src}
             alt=""
-            fill
+            // fill
             style={{ objectFit: 'cover', objectPosition: 'center', filter: 'blur(10px)' }}
         />
     }
@@ -73,7 +72,7 @@ export default function MoveMatchGameLobbyPage() {
                     </div>
                 </>}
                 // disableHero                
-                backgroundImage={backgroundImage}
+                backgroundImage={backgroundImage.src}
                 CardBodyPrependContent={<>
                     {/* <div className='mb-2 border-bottom pb-2'>
                         <Link href={"/play?local_play=true"} className="w-100">

@@ -2,6 +2,7 @@ import { memo } from "react";
 
 import { useMoveMatchStore } from "@/hooks/useMoveMatchStore";
 import { ModelMan } from "../Models/Man";
+import { useStore } from "@/hooks/useStore";
 
 const DEFAULT_SCALE = [1, 1, 1];
 const FLIPPED_SCALE = [-1, 1, 1];
@@ -14,6 +15,9 @@ const lastMoveToAnimationMap = {
 }
 
 const Player = memo(function Player({ player }) {
+
+    const characterCustomization = useStore((state) => state.characterCustomization)
+
     const playerId = player?.id;
     const derivedMoveIndex = useMoveMatchStore(state => {
         if (!playerId) return 0;
@@ -29,6 +33,14 @@ const Player = memo(function Player({ player }) {
 
     const scale = player?.lastMove === 'Right' ? FLIPPED_SCALE : DEFAULT_SCALE;
 
+    function calculatedCharacterSettings() {
+        if (!player) return null;
+
+        if (playerId == "local") {
+            return characterCustomization;
+        }
+    }
+
     return (
         <group>
             <ModelMan
@@ -37,6 +49,9 @@ const Player = memo(function Player({ player }) {
                 scale={scale}
                 action={lastMoveToAnimationMap[player?.lastMove] || "HumanArmature|Man_Idle"}
                 moveIndex={player?.moveIndex ?? derivedMoveIndex}
+                forceCharacterSettings={
+                    calculatedCharacterSettings()
+                }
             />
         </group>
     )
