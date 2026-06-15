@@ -60,7 +60,15 @@ export default function GameOverModal({
 
                     <div className="p-3">
 
-                        <div className="mb-3">The winner was <b>{gameState?.winner?.nickname || "Unknown"}</b>!</div>
+                        {gameState?.winner === false ? (
+                            <div className="mb-3">No one won this time! Incorrect patterns made.</div>
+                        ) : (
+                            <div className="mb-3">The winner was <b>{gameState?.winner?.nickname || "Unknown"}</b>!</div>
+                        )}
+
+                        <div>Total Moves Time: {gameState?.players?.[0]?.scorecard?.reduce((acc, curr) => acc + (curr.finishTime || 0), 0) || 0} seconds</div>
+
+                        {/* <div className="mb-3">The winner was <b>{gameState?.winner?.nickname || "Unknown"}</b>!</div> */}
 
                         {/* <div className="mb-2">Here is how everyone else did:</div>
 

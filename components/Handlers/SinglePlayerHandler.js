@@ -72,7 +72,11 @@ export default function SinglePlayerHandler() {
             console.warn("No players found in game state, adding local player.")
 
             setGameState({
-                players: [{ id: 'local', nickname: nickname }],
+                players: [{
+                    id: 'local',
+                    nickname: nickname,
+                    scorecard: [],
+                }],
                 status: 'In Lobby',
             });
 
@@ -106,7 +110,8 @@ export default function SinglePlayerHandler() {
                             ...p,
                             moves: [],
                             moveIndex: 0,
-                            lastMove: null
+                            lastMove: null,
+                            scorecard: [],
                         }))
                     };
 
@@ -122,7 +127,21 @@ export default function SinglePlayerHandler() {
                     newGameState = {
                         ...newGameState,
                         status: 'Game Over',
-                        roundTimer: 0
+                        roundTimer: 0,
+                        ...(newGameState.players?.[0].scorecard.every(s => s.success) ?
+                            {
+                                winner: { 
+                                    nickname: newGameState.players?.[0].nickname || "Unknown" 
+                                },
+                            }
+                            :
+                            {
+                                winner: false
+                            }
+                        ),
+                        // winner: {
+                        //     nickname: false,
+                        // },
                     };
                     // return
                 }
@@ -175,6 +194,14 @@ export default function SinglePlayerHandler() {
                         moves: [],
                         moveIndex: 0,
                         lastMove: null,
+                        scorecard: [
+                            ...(p.scorecard || []),
+                            {
+                                round: gameState.round,
+                                success: p.moves?.length === gameState.movesSequences?.[gameState.round]?.length && p.moves?.every((m, i) => (m.move || m) === gameState.movesSequences?.[gameState.round]?.[i]),
+                                finishTime: 10 - gameState.roundTimer
+                            }
+                        ],
                     }))
                 })
             }

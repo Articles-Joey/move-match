@@ -22,7 +22,7 @@ const LandingBackgroundAnimation = dynamic(() =>
     {
         ssr: false,
         loading: () => <img
-            src={backgroundImage.src}
+            src={backgroundImage}
             alt=""
             // fill
             style={{ objectFit: 'cover', objectPosition: 'center', filter: 'blur(10px)' }}
@@ -72,7 +72,7 @@ export default function MoveMatchGameLobbyPage() {
                     </div>
                 </>}
                 // disableHero                
-                backgroundImage={backgroundImage.src}
+                backgroundImage={backgroundImage}
                 CardBodyPrependContent={<>
                     {/* <div className='mb-2 border-bottom pb-2'>
                         <Link href={"/play?local_play=true"} className="w-100">

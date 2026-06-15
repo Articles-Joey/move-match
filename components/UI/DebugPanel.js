@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useMoveMatchStore } from "@/hooks/useMoveMatchStore";
 import { useGameStore } from "@/hooks/useGameStore";
 import { useMemo } from "react";
+import { useAddMove } from "@/hooks/useAddMove";
 
 export default function DebugPanel() {
 
@@ -21,6 +22,8 @@ export default function DebugPanel() {
     // const {
     //     moves
     // } = useMoveMatchStore()
+
+    const addMove = useAddMove();
 
     const moves = useMemo(() => {
 
@@ -61,18 +64,18 @@ export default function DebugPanel() {
                 >
                     {moves.length === 0 && <div className="text-muted">No moves yet</div>}
                     {[...moves]
-                    .reverse()
-                    .map((item, index) => {
-                        return (
-                            <div key={item.move + index} className="d-flex align-items-center gap-2">
+                        .reverse()
+                        .map((item, index) => {
+                            return (
+                                <div key={item.move + index} className="d-flex align-items-center gap-2">
 
-                                <div className="badge bg-secondary">{item.move}</div>
+                                    <div className="badge bg-secondary">{item.move}</div>
 
-                                <div className="text-muted">{item.player_id}</div>
-                                
-                            </div>
-                        )
-                    })}
+                                    <div className="text-muted">{item.player_id}</div>
+
+                                </div>
+                            )
+                        })}
                 </div>
 
                 <div className="border p-3 d-flex justify-content-center mb-2">
@@ -81,10 +84,19 @@ export default function DebugPanel() {
                             <ArticlesButton
                                 key={item}
                                 onClick={() => {
-                                    socket.emit('game:move-match:move', {
-                                        game_id: server,
-                                        move: item
-                                    });
+
+                                    addMove(item);
+
+                                    // if (server) {
+
+                                    //    addMove(item);
+
+                                    // } else {
+
+                                    //     addMove(item);
+
+                                    // }
+
                                 }}
                             >
                                 <i className={`fad fa-arrow-${item} me-0`}></i>

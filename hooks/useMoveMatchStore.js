@@ -20,15 +20,15 @@ export const useMoveMatchStore = create((set) => ({
 
 }))
 
-export const useControlsStore = create((set) => ({
-    touchControls: {
-        jump: false,
-        left: false,
-        right: false
-    },
-    setTouchControls: (newValue) => {
-        set((prev) => ({
-            touchControls: newValue
-        }))
-    }
-}))
+// export const useControlsStore = create((set) => ({
+//     touchControls: {
+//         jump: false,
+//         left: false,
+//         right: false
+//     },
+//     setTouchControls: (newValue) => {
+//         set((prev) => ({
+//             touchControls: newValue
+//         }))
+//     }
+// }))

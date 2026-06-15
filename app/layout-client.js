@@ -10,6 +10,8 @@ import { useSocketStore } from "@/hooks/useSocketStore";
 import packageInfo from '@/package.json';
 import { useHotkeys } from "react-hotkeys-hook";
 import CharacterCustomizationModal from "@/components/UI/CharacterCustomizationModal";
+import ControlsPanel from "@/components/UI/ControlsPanel";
+import { useControlsStore } from "@/hooks/useControlsStore";
 
 export default function LayoutClient({ children }) {
 
@@ -57,11 +59,12 @@ export default function LayoutClient({ children }) {
                         },
                         'Controls': {
                             touchControls: true,
+                            ControlsPanel: <ControlsPanel />,
                             // defaultKeyBindings: {
-                            //     // moveUp: "W",
-                            //     // moveDown: "S",
-                            //     // moveLeft: "A",
-                            //     // moveRight: "D",
+                            //     moveUp: "W",
+                            //     moveDown: "S",
+                            //     moveLeft: "A",
+                            //     moveRight: "D",
                             // }
                         },
                         'Multiplayer': {
@@ -75,6 +78,7 @@ export default function LayoutClient({ children }) {
                     },
                     reset: () => {
                         useAudioStore.getState().resetAudioSettings();
+                        useControlsStore.getState().resetControls();
                     }
                 }}
                 infoModalConfig={{

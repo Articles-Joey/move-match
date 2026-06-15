@@ -45,6 +45,47 @@ export {
   SKIN_TONES
 }
 
+export const ManMesh = memo(function ManMesh({ nodes, characterSettings, ...props }) {
+  return (
+    <group {...props} dispose={null}>
+      <group name="Root_Scene" position={[0, 0, 0]}>
+        <primitive object={nodes.Bone} />
+        <group name="BaseHuman" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
+          {/* Shirt */}
+          <skinnedMesh name="BaseHuman_1" geometry={nodes.BaseHuman_1.geometry} skeleton={nodes.BaseHuman_1.skeleton}>
+            <meshStandardMaterial color={characterSettings.shirt} roughness={0.6} />
+          </skinnedMesh>
+
+          {/* Skin */}
+          <skinnedMesh name="BaseHuman_222" geometry={nodes.BaseHuman_2.geometry} skeleton={nodes.BaseHuman_2.skeleton}>
+            <meshStandardMaterial color={characterSettings.skin} roughness={0.6} />
+          </skinnedMesh>
+
+          {/* Shorts */}
+          <skinnedMesh name="BaseHuman_3" geometry={nodes.BaseHuman_3.geometry} skeleton={nodes.BaseHuman_3.skeleton}>
+            <meshStandardMaterial color={characterSettings.shorts} roughness={0.8} />
+          </skinnedMesh>
+
+          {/* Eyes / Shoes */}
+          <skinnedMesh name="BaseHuman_4" geometry={nodes.BaseHuman_4.geometry} skeleton={nodes.BaseHuman_4.skeleton}>
+            <meshStandardMaterial color={characterSettings.shoes} roughness={0.8} />
+          </skinnedMesh>
+
+          {/* Socks */}
+          <skinnedMesh name="BaseHuman_5" geometry={nodes.BaseHuman_5.geometry} skeleton={nodes.BaseHuman_5.skeleton}>
+            <meshStandardMaterial color={characterSettings.socks} roughness={0.8} />
+          </skinnedMesh>
+
+          {/* Hair */}
+          <skinnedMesh name="BaseHuman_6" geometry={nodes.BaseHuman_6.geometry} skeleton={nodes.BaseHuman_6.skeleton}>
+            <meshStandardMaterial color={characterSettings.hair} roughness={0.8} />
+          </skinnedMesh>
+        </group>
+      </group>
+    </group>
+  )
+})
+
 export const ModelMan = memo(function ModelMan({ 
   action, 
   moveIndex = 0, 
@@ -200,42 +241,7 @@ export const ModelMan = memo(function ModelMan({
 
   return (
     <group ref={group} {...props} dispose={null} scale={renderScale}>
-      <group name="Root_Scene" position={[0, 0, 0]}>
-        <primitive object={nodes.Bone} />
-        <group name="BaseHuman" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
-
-          {/* Shirt */}
-          <skinnedMesh name="BaseHuman_1" geometry={nodes.BaseHuman_1.geometry} skeleton={nodes.BaseHuman_1.skeleton}>
-            <meshStandardMaterial color={characterSettings.shirt} roughness={0.6} />
-          </skinnedMesh>
-
-          {/* Skin */}
-          <skinnedMesh name="BaseHuman_222" geometry={nodes.BaseHuman_2.geometry} skeleton={nodes.BaseHuman_2.skeleton}>
-            <meshStandardMaterial color={characterSettings.skin} roughness={0.6} />
-          </skinnedMesh>
-
-          {/* Shorts */}
-          <skinnedMesh name="BaseHuman_3" geometry={nodes.BaseHuman_3.geometry} skeleton={nodes.BaseHuman_3.skeleton}>
-            <meshStandardMaterial color={characterSettings.shorts} roughness={0.8} />
-          </skinnedMesh>
-
-          {/* Eyes / Shoes */}
-          <skinnedMesh name="BaseHuman_4" geometry={nodes.BaseHuman_4.geometry} skeleton={nodes.BaseHuman_4.skeleton}>
-            <meshStandardMaterial color={characterSettings.shoes} roughness={0.8} />
-          </skinnedMesh>
-
-          {/* Socks */}
-          <skinnedMesh name="BaseHuman_5" geometry={nodes.BaseHuman_5.geometry} skeleton={nodes.BaseHuman_5.skeleton}>
-            <meshStandardMaterial color={characterSettings.socks} roughness={0.8} />
-          </skinnedMesh>
-
-          {/* Hair */}
-          <skinnedMesh name="BaseHuman_6" geometry={nodes.BaseHuman_6.geometry} skeleton={nodes.BaseHuman_6.skeleton}>
-            <meshStandardMaterial color={characterSettings.hair} roughness={0.8} />
-          </skinnedMesh>
-
-        </group>
-      </group>
+      <ManMesh nodes={nodes} characterSettings={characterSettings} />
     </group>
   )
 })

@@ -29,6 +29,13 @@ export default function useGameHelpers() {
                 timer: 0,
                 round: 0,
                 roundTimer: 0,
+                players: useGameStore.getState().gameState.players.map(p => ({
+                    ...p,
+                    moves: [],
+                    moveIndex: 0,
+                    lastMove: null,
+                    scorecard: [],
+                }))
             })
         }
 

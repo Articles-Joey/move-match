@@ -17,6 +17,7 @@ import FenceRing from "./FenceRing";
 import Grass from "./Grass";
 import GrassBlades from "./GrassBlades";
 import { ModelMan } from "../Models/Man";
+import { ManWithNewAnimations } from "./ManWithNewAnimations";
 
 function GameCanvas({
     landingAnimationMode
@@ -104,6 +105,12 @@ function GameCanvas({
                         rotation={[0, 0, 0]}
                         fakeMovements={true}
                     />
+
+                    {/* <ManWithNewAnimations 
+                        position={[-6, 0, 1]}
+                        action="Walk_Loop"
+                    /> */}
+
                 </group>}
 
             {/* Players */}
@@ -204,7 +211,9 @@ function GameCanvas({
             }
 
             {/* Moves Leader NPC */}
-            <MovesNPC />
+            <MovesNPC 
+                landingAnimationMode={landingAnimationMode}
+            />
 
             <Grass />
             <GrassBlades />

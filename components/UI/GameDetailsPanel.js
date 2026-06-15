@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation"
 import { useSocketStore } from "@/hooks/useSocketStore"
 import { use } from "react"
 import useGameHelpers from "@/hooks/useGameHelpers"
+import { useHotkeys } from "react-hotkeys-hook"
 // import { useIceSlideStore } from "@/hooks/useIceSlideStore"
 
 export default function GameDetailsPanel() {
@@ -44,9 +45,19 @@ export default function GameDetailsPanel() {
 
                         {/* <div className="player-name">Ready: {player.ready ? "Yes" : "No"}</div> */}
 
-                        <div className="d-flex justify-content-between">
+                        <div className="d-flex justify-content-between flex-column" style={{ fontSize: "0.6rem" }}>
 
-                            <div>X: {player?.x?.toFixed(2) || 0} | Z: {player?.z?.toFixed(2) || 0}</div>
+                            {/* <div>X: {player?.x?.toFixed(2) || 0} | Z: {player?.z?.toFixed(2) || 0}</div> */}
+
+                            {player?.scorecard && player.scorecard.map((entry, index) => (
+                                <div key={index} className="scorecard-entry">
+                                    <span>Round {entry.round + 1}: </span>
+                                    <span className={`badge ${entry.success ? 'bg-success' : 'bg-danger'}`}>
+                                        {entry.success ? "Success" : "Fail"}
+                                    </span>
+                                    <span> - Time: {entry.finishTime || 0}s</span>
+                                </div>
+                            ))}
 
                         </div>
 
@@ -76,6 +87,13 @@ function RoundAndTimer() {
     const searchParams = useSearchParams()
     const params = Object.fromEntries(searchParams.entries());
     const { server } = params
+
+    useHotkeys(['enter', 'space'], (event) => {
+        if (status !== "In Progress") {
+            startGame()
+            event.preventDefault();
+        }
+    }, [status])
 
     return (
         <div className="w-100">

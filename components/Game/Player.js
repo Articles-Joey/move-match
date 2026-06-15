@@ -3,16 +3,10 @@ import { memo } from "react";
 import { useMoveMatchStore } from "@/hooks/useMoveMatchStore";
 import { ModelMan } from "../Models/Man";
 import { useStore } from "@/hooks/useStore";
+import lastMoveToAnimationMap from "@/util/lastMoveToAnimationMap";
 
 const DEFAULT_SCALE = [1, 1, 1];
 const FLIPPED_SCALE = [-1, 1, 1];
-
-const lastMoveToAnimationMap = {
-    'Up': "HumanArmature|Man_Jump",
-    'Down': "HumanArmature|Man_Sitting",
-    'Left': "HumanArmature|Man_Punch",
-    'Right': "HumanArmature|Man_Punch",
-}
 
 const Player = memo(function Player({ player }) {
 
